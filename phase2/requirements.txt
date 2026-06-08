@@ -1,0 +1,20 @@
+# Phase 2 의존성 (Python 3.11+ 권장)
+#
+# [중요] torch 는 GPU(CUDA) 빌드를 직접 설치하세요. 기본 pip torch 는 환경에 따라
+# CPU 전용일 수 있습니다. RTX 4090(CUDA 12.x) 예시:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu124
+# 설치 후 확인:  python -c "import torch; print(torch.cuda.is_available())"  # True 여야 함
+
+torch>=2.2
+transformers>=4.40,<5
+tokenizers>=0.19
+scikit-learn>=1.3
+pandas>=2.0
+numpy>=1.24
+pyarrow>=14          # parquet I/O
+matplotlib>=3.7      # horizon decay plot
+tqdm>=4.66
+
+# --- Phase 1 (데이터 구축) 에도 필요 ---
+openpyxl>=3.1        # BIGKinds xlsx 읽기
+pykrx>=1.0           # 가격 시계열 연장 다운로드 (build_prices.py)
