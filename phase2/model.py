@@ -13,6 +13,7 @@ model.py — HeadlineAttentionModel (Phase 2 주 모델)
 """
 from __future__ import annotations
 import math
+from contextlib import nullcontext
 
 import torch
 import torch.nn as nn
@@ -48,6 +49,7 @@ class HeadlineAttentionModel(nn.Module):
             {f"h{h}": nn.Linear(d, n_classes) for h in self.horizons}
         )
 
+        self.freeze_encoder = freeze_encoder
         if freeze_encoder:
             for p in self.encoder.parameters():
                 p.requires_grad = False
@@ -63,11 +65,18 @@ class HeadlineAttentionModel(nn.Module):
         flat_ids = input_ids.reshape(B * M, L)
         flat_att = attention_mask.reshape(B * M, L)
 
-        enc = self.encoder(input_ids=flat_ids, attention_mask=flat_att)
-        cls = enc.last_hidden_state[:, 0]          # [B*M, d]  ([CLS]/<s>)
-        d = cls.size(-1)
-        e = cls.view(B, M, d)                       # [B, M, d]
+        # frozen 이면 encoder 출력은 학습 파라미터에 대해 상수 → no_grad 로
+        # activation 저장을 피해 메모리 절약(헤드라인 수 ↑ 가능). 수학적으로 동일.
+        enc_ctx = torch.no_grad() if self.freeze_encoder else nullcontext()
+        with enc_ctx:
+            enc = self.encoder(input_ids=flat_ids, attention_mask=flat_att)
+            cls = enc.last_hidden_state[:, 0]      # [B*M, d]  ([CLS]/<s>)
+        e = cls.view(B, M, cls.size(-1))            # [B, M, d]
+        return self.pool_and_classify(e, headline_mask, index_id)
 
+    def pool_and_classify(self, e, headline_mask, index_id):
+        """encoder 출력 e=[B,M,d] 로부터 attention pooling + horizon head.
+        frozen encoder 실험에서 캐시된 임베딩을 재사용하기 위해 분리."""
         # attention score: q · e_i
         scores = torch.einsum("bmd,d->bm", e, self.query)  # [B, M]
         scores = scores.masked_fill(~headline_mask, float("-inf"))
