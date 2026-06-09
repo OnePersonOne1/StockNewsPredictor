@@ -1,0 +1,19 @@
+# 케이스별 attention 집중도 (단일 query → horizon 공통)
+
+norm_entropy 1=균일(평균 pooling=학습 실패), top1_lift 1=균일·↑=차별화.
+
+| 케이스 | 규모 | norm_entropy | top1_lift | top5_mass |
+|---|---|---|---|---|
+| 2024 all (EXP-A) | 소 | 1.0 | 1.07 | 0.175 |
+| 2024 market (EXP-C) | 소 | 1.0 | 1.07 | 0.176 |
+| 2024 macro (EXP-C) | 소 | 1.0 | 1.07 | 0.175 |
+| 2021 (EXP-F) | 소 | 0.999 | 1.13 | 0.182 |
+| 2022 (EXP-F) | 소 | 0.995 | 1.58 | 0.225 |
+| 2023 (EXP-F) | 소 | 1.0 | 1.06 | 0.174 |
+| multiyear all (EXP-D) | 대 | 0.768 | 7.85 | 0.641 |
+| multiyear market (EXP-E) | 대 | 0.803 | 6.9 | 0.593 |
+| multiyear macro (EXP-E) | 대 | 0.809 | 6.31 | 0.582 |
+| multiyear it (EXP-G) | 대 | 0.815 | 7.53 | 0.56 |
+| multiyear market_it (EXP-G) | 대 | 1.0 | 1.01 | 0.167 |
+
+관찰: 소표본 케이스는 모두 attention 붕괴(lift~1=평균 pooling)이고, 대표본은 차별화(lift 6~8). 예외 multiyear market_it 의 붕괴는 seed 42 학습 실패와 일치(시드 변동성, EXP-G §4).

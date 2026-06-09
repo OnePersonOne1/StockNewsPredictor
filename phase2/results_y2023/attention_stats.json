@@ -1,0 +1,11 @@
+{
+  "n_test_rows": 38,
+  "mean_n_active": 30.0,
+  "mean_norm_entropy": 0.9999004791588166,
+  "min_norm_entropy": 0.9998460790917324,
+  "mean_top1_lift": 1.0620989674016048,
+  "max_top1_lift": 1.085749626159668,
+  "mean_top5_mass": 0.17362686677982933,
+  "uniform_weight_1_over_n": 0.03333333333333335,
+  "interpretation": "norm_entropy≈1 이고 top1_lift≈1 이면 attention 이 균일에 가까워 pooling 이 사실상 평균과 무차별(헤드라인 차별화 실패)."
+}

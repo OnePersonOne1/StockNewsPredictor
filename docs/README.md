@@ -60,6 +60,15 @@ LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ tr
 6. **방법론 caveat — RoBERTa 단일 시드 변동성**: market_it 을 4개 시드로 재학습 시 best
    val 0.196~0.269. **RoBERTa 단일 셀 수치는 ±0.04+ 불확실**하므로 필터 간 미세 비교는
    TF-IDF(결정적)와 '경향'에 무게를 둔다. 향후 다중 시드 평균이 정도.
+7. **Attention 집중도가 '학습 성공'의 지표**(케이스 11개, `results/attention_summary.*`):
+   소표본은 모두 top-1 lift≈1(평균 pooling 붕괴), 대표본은 6~8×(차별화). 유일한 예외
+   multiyear market_it(lift 1.01)은 seed 42 학습 실패와 정확히 일치 → attention map 이
+   붕괴/시드변동을 그대로 드러낸다. (attention 은 단일 query 라 horizon 공통.)
+
+> 산출물 정리: 각 실험 케이스 폴더(`phase2/results*/`)에 attention map·heatmap·entropy
+> 분포·통계(`attention_*`)와 8셀 metric(`test_metrics`, `metrics.json`)이 모두 포함.
+> 케이스 간 요약은 `results/attention_summary.{md,png}`, `results*/filter_ablation.*`,
+> `results/exp_f_datasize.*`.
 
 ### 방법론 사다리 — 2024-only (train 406, test 40; h=1 / h=5)
 
