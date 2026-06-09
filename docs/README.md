@@ -22,6 +22,7 @@
 | [EXP-C](experiments/EXP-C_headline-relevance-filter.md) | 헤드라인 관련성 필터 (증권/거시) | 완료 | **TF-IDF 대폭↑**(KOSDAQ h5 0.25→0.45), RoBERTa 불변 |
 | [EXP-D](experiments/EXP-D_multiyear-plan.md) | 2021–2023 학습 → 2024 예측 | **완료** | **데이터 확대로 RoBERTa 붕괴 해소**(attention·예측 부활), 단 모든 방법 ~무작위 |
 | [EXP-E](experiments/EXP-E_multiyear-filter.md) | 다년 × 관련성 필터 결합 | 완료 | **필터+TF-IDF 최강**(KOSPI h1 0.380), 필터는 RoBERTa 엔 무이득(market 은 해로움) |
+| [EXP-F](experiments/EXP-F_datasize-vs-period.md) | 데이터 크기 vs 2025 특수성 | 완료 | **붕괴 원인=데이터 크기** (정상기 2021/22/23 소표본도 붕괴), 2025 특수성 아님 |
 
 **고찰**: [모델 유형 × 입력 정제의 상호작용](discussion.md) — BoW 는 정제(차원↓)가 큰 레버,
 LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ trade-off.
@@ -43,6 +44,9 @@ LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ tr
    예측·attention 모두 붕괴(EXP-A·B·C)했으나, **3년 데이터(EXP-D)에서 붕괴가 해소**
    (attention top-1 lift 1.07×→7.85×, 예측이 3클래스로 분산)되고 TF-IDF 와 대등해짐.
    → 딥러닝의 병목은 모델 용량이 아니라 **데이터 규모**. 큰 모델은 해법이 아님.
+   **EXP-F 통제 실험으로 확정**: 정상기 2021·2022·2023 소표본도 모두 붕괴 →
+   원인은 데이터 크기이고 **2025 특수성이 아니다**. (h21/h252 단일클래스 퇴화는
+   1개월 test 창 × 장기 horizon 의 구조적 산물로 연도 불문 발생, 2025 고유 아님.)
 3. **입력 정제(관련성 필터)는 TF-IDF 를 끌어올리나 RoBERTa 엔 무이득.** 2024 소표본
    (EXP-C: KOSDAQ h5 0.25→0.45)·다년(EXP-E: KOSPI h1 0.30→**0.380**) 모두에서 필터가
    TF-IDF 를 개선해 무작위를 상회. 그러나 RoBERTa 는 필터로 나아지지 않고 market 필터는

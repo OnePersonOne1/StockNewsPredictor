@@ -1,0 +1,313 @@
+{
+  "cells": [
+    {
+      "index": "KOSPI",
+      "horizon": 1,
+      "n_test": 22,
+      "accuracy": 0.5454545454545454,
+      "macro_f1": 0.23529411764705885
+    },
+    {
+      "index": "KOSPI",
+      "horizon": 5,
+      "n_test": 22,
+      "accuracy": 0.2727272727272727,
+      "macro_f1": 0.14285714285714285
+    },
+    {
+      "index": "KOSPI",
+      "horizon": 21,
+      "n_test": 22,
+      "accuracy": 0.7272727272727273,
+      "macro_f1": 0.2807017543859649
+    },
+    {
+      "index": "KOSPI",
+      "horizon": 252,
+      "n_test": 22,
+      "accuracy": 1.0,
+      "macro_f1": 0.3333333333333333
+    },
+    {
+      "index": "KOSDAQ",
+      "horizon": 1,
+      "n_test": 22,
+      "accuracy": 0.5454545454545454,
+      "macro_f1": 0.23529411764705885
+    },
+    {
+      "index": "KOSDAQ",
+      "horizon": 5,
+      "n_test": 22,
+      "accuracy": 0.45454545454545453,
+      "macro_f1": 0.20833333333333334
+    },
+    {
+      "index": "KOSDAQ",
+      "horizon": 21,
+      "n_test": 22,
+      "accuracy": 0.7727272727272727,
+      "macro_f1": 0.2905982905982906
+    },
+    {
+      "index": "KOSDAQ",
+      "horizon": 252,
+      "n_test": 22,
+      "accuracy": 1.0,
+      "macro_f1": 0.3333333333333333
+    }
+  ],
+  "per_class_precision_recall": {
+    "KOSPI_h1": {
+      "down(-1)": {
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "flat(0)": {
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "up(+1)": {
+        "precision": 0.5454545454545454,
+        "recall": 1.0
+      }
+    },
+    "KOSPI_h5": {
+      "down(-1)": {
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "flat(0)": {
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "up(+1)": {
+        "precision": 0.2727272727272727,
+        "recall": 1.0
+      }
+    },
+    "KOSPI_h21": {
+      "down(-1)": {
+        "precision": 0.7272727272727273,
+        "recall": 1.0
+      },
+      "flat(0)": {
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "up(+1)": {
+        "precision": 0.0,
+        "recall": 0.0
+      }
+    },
+    "KOSPI_h252": {
+      "down(-1)": {
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "flat(0)": {
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "up(+1)": {
+        "precision": 0.0,
+        "recall": 0.0
+      }
+    },
+    "KOSDAQ_h1": {
+      "down(-1)": {
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "flat(0)": {
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "up(+1)": {
+        "precision": 0.5454545454545454,
+        "recall": 1.0
+      }
+    },
+    "KOSDAQ_h5": {
+      "down(-1)": {
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "flat(0)": {
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "up(+1)": {
+        "precision": 0.45454545454545453,
+        "recall": 1.0
+      }
+    },
+    "KOSDAQ_h21": {
+      "down(-1)": {
+        "precision": 0.7727272727272727,
+        "recall": 1.0
+      },
+      "flat(0)": {
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "up(+1)": {
+        "precision": 0.0,
+        "recall": 0.0
+      }
+    },
+    "KOSDAQ_h252": {
+      "down(-1)": {
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "flat(0)": {
+        "precision": 0.0,
+        "recall": 0.0
+      },
+      "up(+1)": {
+        "precision": 0.0,
+        "recall": 0.0
+      }
+    }
+  },
+  "confusion_matrices": {
+    "KOSPI_h1": [
+      [
+        0,
+        0,
+        6
+      ],
+      [
+        0,
+        0,
+        4
+      ],
+      [
+        0,
+        0,
+        12
+      ]
+    ],
+    "KOSPI_h5": [
+      [
+        0,
+        0,
+        6
+      ],
+      [
+        0,
+        0,
+        10
+      ],
+      [
+        0,
+        0,
+        6
+      ]
+    ],
+    "KOSPI_h21": [
+      [
+        16,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        0
+      ]
+    ],
+    "KOSPI_h252": [
+      [
+        22,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ]
+    ],
+    "KOSDAQ_h1": [
+      [
+        0,
+        0,
+        5
+      ],
+      [
+        0,
+        0,
+        5
+      ],
+      [
+        0,
+        0,
+        12
+      ]
+    ],
+    "KOSDAQ_h5": [
+      [
+        0,
+        0,
+        6
+      ],
+      [
+        0,
+        0,
+        6
+      ],
+      [
+        0,
+        0,
+        10
+      ]
+    ],
+    "KOSDAQ_h21": [
+      [
+        17,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        4,
+        0,
+        0
+      ]
+    ],
+    "KOSDAQ_h252": [
+      [
+        22,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ]
+    ]
+  },
+  "note_h252": "h=252(및 h=21) test 표본 매우 작고 거의 단일 클래스 → 신뢰도 낮음"
+}

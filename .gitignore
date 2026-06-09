@@ -10,9 +10,10 @@ phase2/data/checkpoints/*
 # 프로필·필터 변형 체크포인트 (재현 가능, 미추적)
 phase2/data/checkpoints_*/
 
-# 파생 데이터셋 변형(필터/다중연도): xlsx 에서 재현 가능 → 미추적
-phase1/data/processed/dataset_final_*.parquet
-phase1/data/processed/dataset_2124*.parquet
+# 파생 데이터셋 변형(필터/다중연도/단일연도): xlsx 에서 재현 가능 → 미추적.
+# 표준 dataset_final.parquet 만 추적.
+phase1/data/processed/dataset_*.parquet
+!phase1/data/processed/dataset_final.parquet
 
 # OS / 에디터
 .DS_Store

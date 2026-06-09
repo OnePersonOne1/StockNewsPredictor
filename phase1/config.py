@@ -55,6 +55,21 @@ _PROFILES = {
         "price_back_start": "20210101",  # pykrx 로 2021~2023 백필 (KRX 자격증명 필요)
     },
 }
+
+# 단일연도 소표본 복제 프로필(EXP-F): 2024 와 동일 구조(Jan~Oct/Nov/Dec)를 정상기
+# 2021·2022·2023 에 재현 → 'EXP-A 붕괴가 데이터 크기 탓인지 2025 특수성 탓인지' 분리.
+# 가격은 prices.parquet(2021~2026, EXP-D 에서 구축)에 이미 포함 → 백필 불필요.
+for _yr in (2021, 2022, 2023):
+    _PROFILES[f"y{_yr}"] = {
+        "split_bounds": {
+            "train": (f"{_yr}-01-01", f"{_yr}-10-31"),
+            "val":   (f"{_yr}-11-01", f"{_yr}-11-30"),
+            "test":  (f"{_yr}-12-01", f"{_yr}-12-31"),
+        },
+        "dataset_file": f"dataset_{_yr}.parquet",
+        "data_years": (_yr,),
+        "price_back_start": None,
+    }
 if EXP_PROFILE not in _PROFILES:
     raise ValueError(f"알 수 없는 EXP_PROFILE={EXP_PROFILE!r} "
                      f"(가능: {list(_PROFILES)})")
