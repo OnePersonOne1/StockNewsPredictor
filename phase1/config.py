@@ -104,10 +104,13 @@ HEADLINE_CATEGORY_REGEX = _FILTERS[HEADLINE_FILTER]
 # EXP-L: IT_section 자료 보강 (INCLUDE_IT=1) → 본체 + data/IT_section/*.xlsx (식별자 dedup).
 USE_BODY = os.environ.get("USE_BODY", "0") == "1"
 INCLUDE_IT = os.environ.get("INCLUDE_IT", "0") == "1"
+# EXP-N: IT_section 단독 (본체 data/ 미사용, data/IT_section 만 코퍼스로)
+IT_ONLY = os.environ.get("IT_ONLY", "0") == "1"
 
 # 프로필·필터·변형 조합별 접미사 (y2024+all+title → 빈 문자열 → 기존 산출물 보존)
 _TAGS = ([] if EXP_PROFILE == "y2024" else [EXP_PROFILE]) \
         + ([] if HEADLINE_FILTER == "all" else [HEADLINE_FILTER]) \
+        + (["itonly"] if IT_ONLY else []) \
         + (["itaug"] if INCLUDE_IT else []) \
         + (["body"] if USE_BODY else [])
 _SUF = ("_" + "_".join(_TAGS)) if _TAGS else ""
@@ -115,6 +118,7 @@ _SUF = ("_" + "_".join(_TAGS)) if _TAGS else ""
 _DS_BASE = _P["dataset_file"][:-len(".parquet")]
 DATASET_FINAL = _PROC / (_DS_BASE
                          + ("" if HEADLINE_FILTER == "all" else f"_{HEADLINE_FILTER}")
+                         + ("_itonly" if IT_ONLY else "")
                          + ("_itaug" if INCLUDE_IT else "")
                          + ("_body" if USE_BODY else "")
                          + ".parquet")

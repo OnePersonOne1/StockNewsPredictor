@@ -37,6 +37,7 @@ from config import (  # noqa: E402  (직접 실행/패키지 실행 양쪽 지�
     HEADLINE_CATEGORY_REGEX,
     USE_BODY,
     INCLUDE_IT,
+    IT_ONLY,
 )
 
 # BIGKinds export 컬럼명 (한글 고정)
@@ -52,11 +53,14 @@ _WS = __import__("re").compile(r"\s+")
 def load_headlines() -> pd.DataFrame:
     """원본 xlsx 들을 읽어 (date, title) 롱포맷 DataFrame 반환.
     HEADLINE_CATEGORY_REGEX 가 설정되면 '통합 분류1' 카테고리로 관련성 필터링."""
-    files = sorted(glob.glob(str(ROOT / NEWS_GLOB)))
+    if IT_ONLY:  # EXP-N: IT_section 단독 (본체 미사용)
+        files = sorted(glob.glob(str(ROOT / IT_GLOB)))
+    else:
+        files = sorted(glob.glob(str(ROOT / NEWS_GLOB)))
+        if INCLUDE_IT:  # EXP-L: IT_section 자료 보강
+            files += sorted(glob.glob(str(ROOT / IT_GLOB)))
     if not files:
-        raise FileNotFoundError(f"뉴스 원본 없음: {ROOT / NEWS_GLOB}")
-    if INCLUDE_IT:  # EXP-L: IT_section 자료 보강
-        files += sorted(glob.glob(str(ROOT / IT_GLOB)))
+        raise FileNotFoundError(f"뉴스 원본 없음: {ROOT / (IT_GLOB if IT_ONLY else NEWS_GLOB)}")
     usecols = [COL_DATE, COL_TITLE]
     if HEADLINE_CATEGORY_REGEX is not None:
         usecols.append(COL_CAT)
