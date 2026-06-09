@@ -38,6 +38,7 @@ from config import (  # noqa: E402  (직접 실행/패키지 실행 양쪽 지�
     USE_BODY,
     INCLUDE_IT,
     IT_ONLY,
+    HEADLINE_ORDER,
 )
 
 # BIGKinds export 컬럼명 (한글 고정)
@@ -66,16 +67,22 @@ def load_headlines() -> pd.DataFrame:
         usecols.append(COL_CAT)
     if USE_BODY:
         usecols.append(COL_BODY)
-    if INCLUDE_IT:
+    need_id = INCLUDE_IT or HEADLINE_ORDER == "time"
+    if need_id:
         usecols.append(COL_ID)
-    # 뉴스 식별자는 긴 문자열 ID — float 로 읽으면 정밀도 손실로 중복 붕괴 → str 강제
-    dtypes = {COL_ID: str} if INCLUDE_IT else None
+    # 뉴스 식별자는 긴 문자열 ID — float 로 읽으면 정밀도 손실 → str 강제
+    dtypes = {COL_ID: str} if need_id else None
     frames = [pd.read_excel(f, usecols=usecols, dtype=dtypes) for f in files]
     df = pd.concat(frames, ignore_index=True)
+    if HEADLINE_ORDER == "time":  # EXP-S: 식별자의 실제 시각(YYYYMMDDHHMMSS) 추출
+        ts = df[COL_ID].astype(str).str.extract(r"\.(\d{14})")[0]
+        df["ts"] = pd.to_datetime(ts, format="%Y%m%d%H%M%S", errors="coerce")
     if INCLUDE_IT:  # 본체와 IT_section 의 중복(식별자) 제거
         n0 = len(df)
-        df = df.drop_duplicates(subset=COL_ID).drop(columns=[COL_ID])
+        df = df.drop_duplicates(subset=COL_ID)
         print(f"IT 보강: {len(files)}개 파일, 식별자 dedup {n0}→{len(df)}")
+    if need_id:
+        df = df.drop(columns=[COL_ID])
     rename = {COL_DATE: "news_date", COL_TITLE: "title"}
     if HEADLINE_CATEGORY_REGEX is not None:
         rename[COL_CAT] = "category"
@@ -137,8 +144,9 @@ def map_news_to_trading_day(news: pd.DataFrame,
 
 def aggregate_headlines(mapped: pd.DataFrame) -> pd.DataFrame:
     """거래일별 헤드라인 리스트(최신순) + 개수."""
-    # 최신순: 뉴스일자 내림차순(버킷 내에서 T 에 가까운 것이 먼저)
-    mapped = mapped.sort_values(["trading_day", "news_date"],
+    # 최신순 정렬: ts(실제 시각) 가 있으면 그것으로, 없으면 뉴스일자(날짜) 내림차순.
+    sort_key = "ts" if "ts" in mapped.columns else "news_date"
+    mapped = mapped.sort_values(["trading_day", sort_key],
                                 ascending=[True, False])
     grp = mapped.groupby("trading_day")
     agg = pd.DataFrame({

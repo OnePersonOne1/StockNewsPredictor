@@ -110,6 +110,9 @@ IT_ONLY = os.environ.get("IT_ONLY", "0") == "1"
 HEADLINE_SAMPLE = os.environ.get("HEADLINE_SAMPLE", "recent")
 # EXP-R: TF-IDF/wordcount 도 RoBERTa 와 동일하게 일별 최신 N개로 제한(공정 비교). 0=전체(기본)
 BASELINE_TOPN = int(os.environ.get("BASELINE_TOPN", "0"))
+# EXP-S: 버킷 내 헤드라인 정렬 기준. date=일자만(기본, 같은 날짜는 export 순서) /
+#        time=뉴스 식별자의 실제 시각(HHMMSS)으로 정렬 → 진짜 '최신 시각' top-N
+HEADLINE_ORDER = os.environ.get("HEADLINE_ORDER", "date")
 
 # 프로필·필터·변형 조합별 접미사 (y2024+all+title → 빈 문자열 → 기존 산출물 보존)
 _TAGS = ([] if EXP_PROFILE == "y2024" else [EXP_PROFILE]) \
@@ -118,7 +121,8 @@ _TAGS = ([] if EXP_PROFILE == "y2024" else [EXP_PROFILE]) \
         + (["itaug"] if INCLUDE_IT else []) \
         + (["body"] if USE_BODY else []) \
         + ([] if HEADLINE_SAMPLE == "recent" else [HEADLINE_SAMPLE]) \
-        + ([f"top{BASELINE_TOPN}"] if BASELINE_TOPN else [])
+        + ([f"top{BASELINE_TOPN}"] if BASELINE_TOPN else []) \
+        + ([] if HEADLINE_ORDER == "date" else [f"ord{HEADLINE_ORDER}"])
 _SUF = ("_" + "_".join(_TAGS)) if _TAGS else ""
 
 _DS_BASE = _P["dataset_file"][:-len(".parquet")]
@@ -127,6 +131,7 @@ DATASET_FINAL = _PROC / (_DS_BASE
                          + ("_itonly" if IT_ONLY else "")
                          + ("_itaug" if INCLUDE_IT else "")
                          + ("_body" if USE_BODY else "")
+                         + ("" if HEADLINE_ORDER == "date" else f"_ord{HEADLINE_ORDER}")
                          + ".parquet")
 
 # ===========================================================================
