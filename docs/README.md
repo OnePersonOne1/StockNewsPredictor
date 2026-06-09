@@ -21,6 +21,7 @@
 | [EXP-B](experiments/EXP-B_encoder-freeze.md) | Encoder freeze + 헤드라인 확대(mh100) | 완료 | val↑(0.25→0.31) 부분완화, test 여전히 TF-IDF 미달 |
 | [EXP-C](experiments/EXP-C_headline-relevance-filter.md) | 헤드라인 관련성 필터 (증권/거시) | 완료 | **TF-IDF 대폭↑**(KOSDAQ h5 0.25→0.45), RoBERTa 불변 |
 | [EXP-D](experiments/EXP-D_multiyear-plan.md) | 2021–2023 학습 → 2024 예측 | **완료** | **데이터 확대로 RoBERTa 붕괴 해소**(attention·예측 부활), 단 모든 방법 ~무작위 |
+| [EXP-E](experiments/EXP-E_multiyear-filter.md) | 다년 × 관련성 필터 결합 | 완료 | **필터+TF-IDF 최강**(KOSPI h1 0.380), 필터는 RoBERTa 엔 무이득(market 은 해로움) |
 
 ## 데이터 개요 (2024)
 
@@ -39,9 +40,11 @@
    예측·attention 모두 붕괴(EXP-A·B·C)했으나, **3년 데이터(EXP-D)에서 붕괴가 해소**
    (attention top-1 lift 1.07×→7.85×, 예측이 3클래스로 분산)되고 TF-IDF 와 대등해짐.
    → 딥러닝의 병목은 모델 용량이 아니라 **데이터 규모**. 큰 모델은 해법이 아님.
-3. **입력 정제(관련성 필터, EXP-C)가 2024 소표본에서 TF-IDF 를 크게 끌어올렸다**
-   (KOSDAQ h5 0.25→0.45). 잡음 제거가 약한 신호를 부분적으로 살림. (다년+필터 결합은
-   EXP-E 후보.)
+3. **입력 정제(관련성 필터)는 TF-IDF 를 끌어올리나 RoBERTa 엔 무이득.** 2024 소표본
+   (EXP-C: KOSDAQ h5 0.25→0.45)·다년(EXP-E: KOSPI h1 0.30→**0.380**) 모두에서 필터가
+   TF-IDF 를 개선해 무작위를 상회. 그러나 RoBERTa 는 필터로 나아지지 않고 market 필터는
+   헤드라인 수를 줄여 오히려 해로움 → **TF-IDF 는 입력 정제를, RoBERTa 는 입력 볼륨을
+   선호.** 가장 강한 예측기 = **시장 카테고리 정제 TF-IDF**(KOSPI 단기).
 4. h21/h252 는 짧은 test 창(2024-only)에선 단일클래스로 무의미했으나, **test 를
    2024 전체로 늘리면(EXP-D) 의미 있는 값**을 가진다 → 평가 설계가 결론을 좌우.
 

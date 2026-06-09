@@ -20,12 +20,14 @@ _ROOT = pathlib.Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from phase1.config import HORIZONS, INDEX_NAMES, PHASE2_DIR  # noqa: E402
+from phase1.config import HORIZONS, INDEX_NAMES, PHASE2_DIR, EXP_PROFILE  # noqa: E402
 
-RESULTS_MAIN = PHASE2_DIR / "results"
-FILTERS = [("all", PHASE2_DIR / "results"),
-           ("market", PHASE2_DIR / "results_market"),
-           ("macro", PHASE2_DIR / "results_macro")]
+# 프로필 인식: y2024 → results{,_market,_macro}; multiyear → results_multiyear{,_market,_macro}
+_PSUF = "" if EXP_PROFILE == "y2024" else f"_{EXP_PROFILE}"
+RESULTS_MAIN = PHASE2_DIR / f"results{_PSUF}"
+FILTERS = [("all", PHASE2_DIR / f"results{_PSUF}"),
+           ("market", PHASE2_DIR / f"results{_PSUF}_market"),
+           ("macro", PHASE2_DIR / f"results{_PSUF}_macro")]
 MODELS = [("TF-IDF", "baseline_metrics.csv"), ("RoBERTa", "test_metrics.csv")]
 
 
