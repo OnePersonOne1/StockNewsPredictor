@@ -32,6 +32,7 @@ from config import (  # noqa: E402  (직접 실행/패키지 실행 양쪽 지�
     DATASET_FINAL,
     INDEX_NAMES,
     HORIZONS,
+    DATA_YEARS,
 )
 
 # BIGKinds export 컬럼명 (한글 고정)
@@ -123,10 +124,10 @@ def build() -> pd.DataFrame:
 
     prices_ret = add_forward_returns(prices)
 
-    # 2024 거래일만 행으로 사용 (헤드라인은 2024년만 존재)
-    is_2024 = prices_ret["date"].dt.year == 2024
-    rows = prices_ret.loc[is_2024, ["date", "index_name", "close",
-                                    *[f"ret_h{h}" for h in HORIZONS]]]
+    # 헤드라인이 존재하는 연도만 행으로 사용 (config.DATA_YEARS, 프로필별)
+    in_years = prices_ret["date"].dt.year.isin(DATA_YEARS)
+    rows = prices_ret.loc[in_years, ["date", "index_name", "close",
+                                     *[f"ret_h{h}" for h in HORIZONS]]]
 
     # 헤드라인 결합 (지수 무관 → date 로 join)
     df = rows.merge(daily, on="date", how="inner")
