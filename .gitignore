@@ -4,9 +4,9 @@ __pycache__/
 *.pyo
 .ipynb_checkpoints/
 
-# 모델 체크포인트 (대용량, 재학습으로 재현 가능)
-*.pt
-phase2/data/checkpoints/
+# 모델 체크포인트: best.pt 는 LFS 로 추적(.gitattributes). 그 외는 무시.
+phase2/data/checkpoints/*
+!phase2/data/checkpoints/best.pt
 
 # OS / 에디터
 .DS_Store

@@ -1,0 +1,33 @@
+Some weights of RobertaModel were not initialized from the model checkpoint at klue/roberta-base and are newly initialized: ['pooler.dense.bias', 'pooler.dense.weight']
+You should probably TRAIN this model on a down-stream task to be able to use it for predictions and inference.
+device: cuda | encoder: klue/roberta-base
+sigma_h(train): {1: 0.0135, 5: 0.0279, 21: 0.0463, 252: 0.1856}
+splits: train=406 val=42 test=40
+
+[epoch 1] train_loss=1.1029 val_loss=1.0178 val_macroF1(avg)=0.2441
+   h=  1: val_acc=0.238 val_macroF1=0.128
+   h=  5: val_acc=0.571 val_macroF1=0.242
+   h= 21: val_acc=0.690 val_macroF1=0.272
+   h=252: val_acc=1.000 val_macroF1=0.333
+   ✓ best 갱신 (val_macroF1=0.2441) → /mnt/ssd_0/workspace/StockNewsPredictor/phase2/data/checkpoints/best.pt
+
+[epoch 2] train_loss=1.0911 val_loss=0.9960 val_macroF1(avg)=0.2514
+   h=  1: val_acc=0.310 val_macroF1=0.158
+   h=  5: val_acc=0.571 val_macroF1=0.242
+   h= 21: val_acc=0.690 val_macroF1=0.272
+   h=252: val_acc=1.000 val_macroF1=0.333
+   ✓ best 갱신 (val_macroF1=0.2514) → /mnt/ssd_0/workspace/StockNewsPredictor/phase2/data/checkpoints/best.pt
+
+[epoch 3] train_loss=1.0883 val_loss=1.0166 val_macroF1(avg)=0.2514
+   h=  1: val_acc=0.310 val_macroF1=0.158
+   h=  5: val_acc=0.571 val_macroF1=0.242
+   h= 21: val_acc=0.690 val_macroF1=0.272
+   h=252: val_acc=1.000 val_macroF1=0.333
+
+[epoch 4] train_loss=1.0835 val_loss=1.0155 val_macroF1(avg)=0.2441
+   h=  1: val_acc=0.238 val_macroF1=0.128
+   h=  5: val_acc=0.571 val_macroF1=0.242
+   h= 21: val_acc=0.690 val_macroF1=0.272
+   h=252: val_acc=1.000 val_macroF1=0.333
+
+학습 종료. best val macro-F1=0.2514
