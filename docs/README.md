@@ -32,6 +32,7 @@
 | [EXP-M](experiments/EXP-M_binary-reeval-cause.md) | 전 실험 이분법/IC 재평가(원인) | 완료(1단계) | **원인=데이터 크기**: 소표본 IC std±0.1~0.3(부호 flip), 대표본만 +0.146±0.026 안정 |
 | [EXP-N](experiments/EXP-N_it-section-only.md) | IT_section 단독 | 완료 | **IT 단독은 약함**(macro-F1 0.18, IC +0.035 vs 본체 +0.146) — 신호는 경제 프레이밍에 |
 | [EXP-O](experiments/EXP-O_full-corpus-no-filter.md) | data/ 전체 결합(비여과) | 완료 | **RoBERTa 는 본체와 완전 동일**(top-30 절단 → IT_section 176번째라 투명), TF-IDF만 미세 희석 |
+| [EXP-P](experiments/EXP-P_max-headlines.md) | MAX_HEADLINES 확대(공정성) | 완료 | **헤드라인 더 넣으면 RoBERTa 나빠짐**(mh30→200: macroF1 0.298→0.181). top-30 이 근사 최적 |
 
 **고찰**: [모델 유형 × 입력 정제의 상호작용](discussion.md) — BoW 는 정제(차원↓)가 큰 레버,
 LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ trade-off.
@@ -79,6 +80,12 @@ LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ tr
    소표본은 모두 top-1 lift≈1(평균 pooling 붕괴), 대표본은 6~8×(차별화). 유일한 예외
    multiyear market_it(lift 1.01)은 seed 42 학습 실패와 정확히 일치 → attention map 이
    붕괴/시드변동을 그대로 드러낸다. (attention 은 단일 query 라 horizon 공통.)
+8. **입력 비대칭과 mh(EXP-O·P)**: RoBERTa 는 하루 헤드라인 중 **최신 30개(MAX_HEADLINES=30)**만,
+   TF-IDF 는 **하루 전체(~430건)**를 소비한다(같은 조건 아님). top-30 은 원래 **GPU 메모리
+   제약**(`config.py`)이었으나, mh 를 30→100→200 으로 키우면 RoBERTa 가 **오히려 나빠진다**
+   (macro-F1 KOSPI h5 0.298→0.181; 평균 pooling 희석). 즉 **RoBERTa 는 적고 시의성 있는 입력을,
+   TF-IDF(idf+선형)는 많은 입력을 선호** — 비대칭은 핸디캡이 아니라 모델 특성. 비여과 IT_section
+   추가(EXP-O)가 무효였던 것도 top-30 절단 때문.
 
 > 산출물 정리: 각 실험 케이스 폴더(`phase2/results*/`)에 attention map·heatmap·entropy
 > 분포·통계(`attention_*`)와 8셀 metric(`test_metrics`, `metrics.json`)이 모두 포함.

@@ -53,6 +53,10 @@ class HeadlineAttentionModel(nn.Module):
         if freeze_encoder:
             for p in self.encoder.parameters():
                 p.requires_grad = False
+        # EXP-P: 큰 MAX_HEADLINES 학습 시 메모리 절감(GRAD_CKPT=1). 결과 동일, 속도만↓.
+        import os
+        if os.environ.get("GRAD_CKPT") == "1" and not freeze_encoder:
+            self.encoder.gradient_checkpointing_enable()
 
     def forward(self, input_ids, attention_mask, headline_mask, index_id):
         """
