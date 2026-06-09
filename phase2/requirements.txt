@@ -9,6 +9,7 @@ torch>=2.2
 transformers>=4.40,<5
 tokenizers>=0.19
 scikit-learn>=1.3
+scipy>=1.10            # 유의성 검정(signal_test.py)
 pandas>=2.0
 numpy>=1.24
 pyarrow>=14          # parquet I/O

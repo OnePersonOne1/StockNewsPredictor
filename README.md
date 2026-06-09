@@ -103,6 +103,8 @@
 | `method_comparison.{csv,md,tex}`, `figures/method_comparison.png` | random/wordcount/TF-IDF/RoBERTa 사다리 |
 | `filter_ablation.{csv,md}`, `figures/filter_ablation.png` | 필터(all/market/macro/it/market_it) 비교 |
 | `roberta_freeze_metrics.csv`, `roberta_freeze_compare.md` | encoder freeze 실험(EXP-B, results/ 만) |
+| `signal_metrics.csv`, `signal_report.md` | EXP-H 신호 검정(이진 up/down·IC·롱숏 백테스트+유의성) |
+| `signal_seed_sweep.csv/md`, `figures/signal_summary.png` | EXP-H RoBERTa IC 6-시드 견고성(results_multiyear/) |
 | `top_attention_headlines.csv`, `train_log.txt` | attention 상위 헤드라인 / 학습 로그(results/ 만) |
 
 **`results/` 의 케이스-간 요약(연구 전체):**

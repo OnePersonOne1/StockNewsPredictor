@@ -24,6 +24,7 @@
 | [EXP-E](experiments/EXP-E_multiyear-filter.md) | 다년 × 관련성 필터 결합 | 완료 | **필터+TF-IDF 최강**(KOSPI h1 0.380), 필터는 RoBERTa 엔 무이득(market 은 해로움) |
 | [EXP-F](experiments/EXP-F_datasize-vs-period.md) | 데이터 크기 vs 2025 특수성 | 완료 | **붕괴 원인=데이터 크기** (정상기 2021/22/23 소표본도 붕괴), 2025 특수성 아님 |
 | [EXP-G](experiments/EXP-G_it-sector-filter.md) | IT/반도체 섹터 필터 | 완료(시범) | **IT 9%가 전체에 준하는 신호**(섹터 비중↑ 지지), RoBERTa 셀차는 시드 노이즈 |
+| [EXP-H](experiments/EXP-H_signal-test.md) | 신호 검정(이진·IC·백테스트) | 완료 | **macro-F1 이 약신호를 가렸음**: RoBERTa IC 24/24 시드·셀 양수, KOSPI h5 IC 0.15(p<.05) |
 
 **고찰**: [모델 유형 × 입력 정제의 상호작용](discussion.md) — BoW 는 정제(차원↓)가 큰 레버,
 LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ trade-off.
@@ -38,9 +39,13 @@ LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ tr
 
 ## 종합 결론 (현재까지)
 
-1. **헤드라인의 주가 방향 예측력은 본질적으로 약하다.** 충분한 데이터(EXP-D, 3년)
-   에서 건강하게 학습한 RoBERTa 조차 무작위(0.333) 부근(0.27–0.35)에 머문다.
-   wordcount·TF-IDF·RoBERTa 가 모두 비슷 → 이는 모델 한계가 아니라 신호의 한계.
+1. **헤드라인의 주가 방향 예측력은 약하지만, "없다"고 단정하면 틀린다(EXP-H).**
+   3-class macro-F1 로는 모두 무작위(0.333) 부근이지만, 이는 예측 불가한 flat 클래스와
+   분류 정확도 지표가 *방향* 신호를 가린 탓이다. **IC(Spearman) 로 보면 RoBERTa 가
+   6시드 × 4셀 = 24/24 전부 양(+)의 신호**(우연 p≈6e-8), **KOSPI h5 IC≈0.15(p<.05)**.
+   단 IC 가 약해(분산 ~2%) **롱숏 백테스트는 비유의 → 거래 가능 alpha 는 아님**(약형
+   효율성과 정합). 즉 신호는 **실재하나 약하다**. 흥미로운 반전: macro-F1 1등 TF-IDF 는
+   방향 IC≈0, wordcount 는 유의한 음(역발상) 신호. → **지표 선택이 결론을 좌우.**
 2. **EXP-A 의 "딥러닝이 진다"는 데이터 규모의 산물이었다.** 406행에선 RoBERTa 가
    예측·attention 모두 붕괴(EXP-A·B·C)했으나, **3년 데이터(EXP-D)에서 붕괴가 해소**
    (attention top-1 lift 1.07×→7.85×, 예측이 3클래스로 분산)되고 TF-IDF 와 대등해짐.
