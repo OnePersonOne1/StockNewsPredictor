@@ -31,6 +31,7 @@
 | [EXP-L](experiments/EXP-L_it-augmentation.md) | IT 자료 보강(IT_section 병합) | 완료 | IT 볼륨 2배·dedup 버그 수정. TF-IDF 견조(market_it KOSPI h1 0.387), RoBERTa IC 단일시드 부호 flip→판정불가 |
 | [EXP-M](experiments/EXP-M_binary-reeval-cause.md) | 전 실험 이분법/IC 재평가(원인) | 완료(1단계) | **원인=데이터 크기**: 소표본 IC std±0.1~0.3(부호 flip), 대표본만 +0.146±0.026 안정 |
 | [EXP-N](experiments/EXP-N_it-section-only.md) | IT_section 단독 | 완료 | **IT 단독은 약함**(macro-F1 0.18, IC +0.035 vs 본체 +0.146) — 신호는 경제 프레이밍에 |
+| [EXP-O](experiments/EXP-O_full-corpus-no-filter.md) | data/ 전체 결합(비여과) | 완료 | **RoBERTa 는 본체와 완전 동일**(top-30 절단 → IT_section 176번째라 투명), TF-IDF만 미세 희석 |
 
 **고찰**: [모델 유형 × 입력 정제의 상호작용](discussion.md) — BoW 는 정제(차원↓)가 큰 레버,
 LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ trade-off.
