@@ -7,6 +7,12 @@ __pycache__/
 # 모델 체크포인트: best.pt 는 LFS 로 추적(.gitattributes). 그 외는 무시.
 phase2/data/checkpoints/*
 !phase2/data/checkpoints/best.pt
+# 프로필·필터 변형 체크포인트 (재현 가능, 미추적)
+phase2/data/checkpoints_*/
+
+# 파생 데이터셋 변형(필터/다중연도): xlsx 에서 재현 가능 → 미추적
+phase1/data/processed/dataset_final_*.parquet
+phase1/data/processed/dataset_2124*.parquet
 
 # OS / 에디터
 .DS_Store

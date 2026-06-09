@@ -100,3 +100,55 @@ python phase2/compare_methods.py     # 방법론 비교표/그림
 ```
 관련 산출: `roberta_freeze_metrics.csv`, `roberta_freeze_compare.md`,
 `method_comparison.*`, `attention_*`.
+
+---
+
+## 실험 C — 헤드라인 관련성 필터 (잡음 제거 ablation)
+
+동기: 원본은 하루 ~287건(매핑 후 행당 ~427건)을 쓰는데 유통·자동차·부동산·국제
+일반 등 **주가와 무관한 기사가 다수** 섞여 신호가 희석된다(실험 A 의 attention
+붕괴와 같은 맥락). BIGKinds '통합 분류1' 로 시장 관련 기사만 남겨 신호/잡음비를
+높이면 성능이 오르는지 검증. (라벨·split·σ-train-only·encoder 불변. 2024 데이터로
+실행 — 추가 데이터 불필요.)
+
+세 입력: `all`(전체) / `market`(경제>증권_증시, 일~28건) /
+`macro`(증권+금융+국제경제+외환+경제일반, 일~66건). 칼럼/오피니언은 BIGKinds
+별도 카테고리가 없고 제목태그로 일 ~6건뿐 + 우리 attention 분석상 저신호라 제외.
+
+### 결과: TF-IDF 는 크게 개선, RoBERTa 는 불변(붕괴 지속)
+
+**TF-IDF test macro-F1 (h=1 / h=5):**
+
+| index | all | market | macro |
+|---|---|---|---|
+| KOSDAQ | 0.246 / 0.250 | 0.325 / **0.448** | **0.399** / 0.365 |
+| KOSPI  | 0.279 / 0.356 | 0.259 / 0.378 | 0.251 / **0.411** |
+
+**RoBERTa test macro-F1**: 세 필터 모두 **동일**(KOSPI 0.111/0.207, KOSDAQ
+0.032/0.173), best val 0.2514 로 변화 없음 → 여전히 단일클래스 붕괴.
+
+### 분석
+- **사용자의 '관련없는 기사가 신호를 희석한다' 가설이 TF-IDF 에서 실증됨.**
+  KOSDAQ h5 0.250→0.448(+0.198), KOSPI h5 0.356→0.411. 필터 후 여러 셀이
+  무작위(0.333)를 분명히 상회 → **지금까지 가장 강한 예측 신호는
+  '시장 카테고리로 정제한 헤드라인 위의 TF-IDF'**.
+- 단 **KOSPI h1 은 소폭 하락**(0.279→0.251): 대형주(KOSPI)는 거시·정책 등 넓은
+  맥락도 단기 신호에 기여 → 과한 필터가 일부 정보를 깎음. 반면 중소형주 중심
+  KOSDAQ 는 시장 직결 기사 정제 효과가 큼.
+- **RoBERTa 는 입력 정제와 무관하게 붕괴 지속** → 딥러닝의 병목은 입력 잡음이
+  아니라 **소표본(406행)** 임을 재확인(실험 A·B 와 일치). 즉 필터는 '신호가
+  존재함'을 보였지만, 그 신호를 살리는 건 모델 단순성(+데이터)이지 모델 복잡성이 아님.
+
+### 재현
+```
+for F in market macro; do
+  HEADLINE_FILTER=$F python phase1/build_dataset.py
+  HEADLINE_FILTER=$F python phase1/build_labels.py
+  HEADLINE_FILTER=$F python phase2/baseline.py
+  HEADLINE_FILTER=$F python phase2/train.py --batch-size 16
+  HEADLINE_FILTER=$F python phase2/evaluate.py
+done
+python phase2/compare_filters.py     # ablation 표/그림
+```
+산출: `results_market/`, `results_macro/`, `results/filter_ablation.{csv,md}`,
+`results/figures/filter_ablation.png`.

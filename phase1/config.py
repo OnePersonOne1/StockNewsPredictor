@@ -60,7 +60,36 @@ if EXP_PROFILE not in _PROFILES:
                      f"(가능: {list(_PROFILES)})")
 _P = _PROFILES[EXP_PROFILE]
 
-DATASET_FINAL = _PROC / _P["dataset_file"]
+# ===========================================================================
+# 헤드라인 관련성 필터 (HEADLINE_FILTER 환경변수; 기본 all)
+# ---------------------------------------------------------------------------
+# BIGKinds '통합 분류1' 카테고리로 잡음 기사를 걸러 신호/잡음비를 높이는 실험.
+#   all    : 전체(현재) — 필터 없음
+#   market : 경제>증권_증시 만 (일평균 ~28건, 시장 직결)
+#   macro  : 증권+금융+국제경제+외환+경제일반 (일평균 ~66건, 시장·거시)
+# 칼럼/오피니언은 BIGKinds 별도 카테고리가 없고 제목태그로 일 ~6건뿐이라 제외.
+# (HEADLINE_CATEGORY_REGEX 가 None 이면 build_dataset 가 필터를 건너뜀)
+# ===========================================================================
+HEADLINE_FILTER = os.environ.get("HEADLINE_FILTER", "all")
+_FILTERS = {
+    "all":    None,
+    "market": r"증권_증시",
+    "macro":  r"증권_증시|금융_재테크|국제경제|외환|경제일반",
+}
+if HEADLINE_FILTER not in _FILTERS:
+    raise ValueError(f"알 수 없는 HEADLINE_FILTER={HEADLINE_FILTER!r} "
+                     f"(가능: {list(_FILTERS)})")
+HEADLINE_CATEGORY_REGEX = _FILTERS[HEADLINE_FILTER]
+
+# 프로필·필터 조합별 접미사 (y2024+all → 빈 문자열 → 기존 산출물 보존)
+_TAGS = ([] if EXP_PROFILE == "y2024" else [EXP_PROFILE]) \
+        + ([] if HEADLINE_FILTER == "all" else [HEADLINE_FILTER])
+_SUF = ("_" + "_".join(_TAGS)) if _TAGS else ""
+
+_DS_BASE = _P["dataset_file"][:-len(".parquet")]
+DATASET_FINAL = _PROC / (_DS_BASE
+                         + ("" if HEADLINE_FILTER == "all" else f"_{HEADLINE_FILTER}")
+                         + ".parquet")
 
 # ===========================================================================
 # Phase 1 — 데이터셋 / 라벨 구축
@@ -95,8 +124,7 @@ BATCH_SIZE = 8         # T4 16GB 가정; OOM 시 4로 fallback
 FREEZE_ENCODER = False
 GRAD_CLIP = 1.0
 
-# --- 경로 (프로필별 분리: y2024 는 접미사 없음 → 기존 산출물 보존) ---
-_SUF = "" if EXP_PROFILE == "y2024" else f"_{EXP_PROFILE}"
+# --- 경로 (프로필·필터 조합별 분리: y2024+all 은 접미사 없음 → 기존 산출물 보존) ---
 CHECKPOINT_DIR = PHASE2_DIR / "data" / f"checkpoints{_SUF}"
 BEST_CKPT = CHECKPOINT_DIR / "best.pt"
 RESULTS_DIR = PHASE2_DIR / f"results{_SUF}"
