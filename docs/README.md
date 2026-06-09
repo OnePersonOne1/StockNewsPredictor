@@ -25,6 +25,7 @@
 | [EXP-F](experiments/EXP-F_datasize-vs-period.md) | 데이터 크기 vs 2025 특수성 | 완료 | **붕괴 원인=데이터 크기** (정상기 2021/22/23 소표본도 붕괴), 2025 특수성 아님 |
 | [EXP-G](experiments/EXP-G_it-sector-filter.md) | IT/반도체 섹터 필터 | 완료(시범) | **IT 9%가 전체에 준하는 신호**(섹터 비중↑ 지지), RoBERTa 셀차는 시드 노이즈 |
 | [EXP-H](experiments/EXP-H_signal-test.md) | 신호 검정(이진·IC·백테스트) | 완료 | **macro-F1 이 약신호를 가렸음**: RoBERTa IC 24/24 시드·셀 양수, KOSPI h5 IC 0.15(p<.05) |
+| [EXP-I](experiments/EXP-I_signal-interpret.md) | 신호의 출처 해석 | 완료 | **KOSPI h5 고확신날 적중률 67%**, 어닝·미국매크로·금리 헤드라인에 주목 |
 
 **고찰**: [모델 유형 × 입력 정제의 상호작용](discussion.md) — BoW 는 정제(차원↓)가 큰 레버,
 LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ trade-off.
