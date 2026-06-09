@@ -64,7 +64,9 @@ def load_headlines() -> pd.DataFrame:
         usecols.append(COL_BODY)
     if INCLUDE_IT:
         usecols.append(COL_ID)
-    frames = [pd.read_excel(f, usecols=usecols) for f in files]
+    # 뉴스 식별자는 긴 문자열 ID — float 로 읽으면 정밀도 손실로 중복 붕괴 → str 강제
+    dtypes = {COL_ID: str} if INCLUDE_IT else None
+    frames = [pd.read_excel(f, usecols=usecols, dtype=dtypes) for f in files]
     df = pd.concat(frames, ignore_index=True)
     if INCLUDE_IT:  # 본체와 IT_section 의 중복(식별자) 제거
         n0 = len(df)
