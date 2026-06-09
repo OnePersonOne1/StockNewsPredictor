@@ -58,7 +58,7 @@ python phase2/analyze.py            # attention 상위 헤드라인
 > `dataset_final.parquet`, `prices.parquet` 가 이미 저장소에 포함되어 있으면
 > Phase 1 을 건너뛰고 바로 Phase 2 를 실행할 수 있다.
 
-## 핵심 결과 요약 (정직한 보고)
+## 핵심 결과 요약
 
 - **h=1, h=5** 에서만 test 라벨이 3-class 로 실제 섞여 있어 의미 있는 평가가 가능.
   기저(TF-IDF) 기준 KOSPI h=5 가 가장 높음(acc 0.55, macro-F1 0.356, 무작위 0.333).
