@@ -48,24 +48,20 @@ def _load_2024(index_name: str) -> pd.DataFrame:
     return df[["date", "close"]].copy()
 
 
+FDR_SYMBOL = {"KOSPI": "KS11", "KOSDAQ": "KQ11"}
+
+
 def _download_range(index_name: str, start: str, end: str) -> pd.DataFrame:
-    """pykrx로 [start, end] 종가 다운로드. 실패 시 명확히 에러."""
-    if not (os.environ.get("KRX_ID") and os.environ.get("KRX_PW")):
-        raise RuntimeError(
-            "KRX_ID / KRX_PW 환경변수가 필요합니다 (KRX_download.py 참조). "
-            "예: KRX_ID=... KRX_PW=... python phase1/build_prices.py"
-        )
-    from pykrx import stock
-    import pykrx.stock.stock_api as api
-
-    # pykrx 1.2.x 의 지수명 부가조회가 간헐적으로 실패 → 우회(데이터엔 무관)
-    api.get_index_ticker_name = lambda t: index_name
-
-    df = stock.get_index_ohlcv_by_date(start, end, TICKER[index_name])
+    """FinanceDataReader 로 [start, end] 지수 종가 다운로드(자격증명 불필요).
+    KRX CSV 와 종가 일치 확인됨(2024-01-02 KOSPI 2669.81)."""
+    import FinanceDataReader as fdr
+    s = f"{start[:4]}-{start[4:6]}-{start[6:]}"
+    e = f"{end[:4]}-{end[4:6]}-{end[6:]}"
+    df = fdr.DataReader(FDR_SYMBOL[index_name], s, e)
     if df is None or len(df) == 0:
         raise RuntimeError(f"{index_name} {start}~{end} 다운로드 결과가 비어있음")
-    out = df.reset_index()[["날짜", "종가"]].rename(
-        columns={"날짜": "date", "종가": "close"}
+    out = df.reset_index()[["Date", "Close"]].rename(
+        columns={"Date": "date", "Close": "close"}
     )
     out["date"] = pd.to_datetime(out["date"])
     return out

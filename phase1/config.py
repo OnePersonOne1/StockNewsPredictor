@@ -18,7 +18,7 @@ _PROC = PHASE1_DIR / "data" / "processed"
 
 PRICES_PARQUET = _PROC / "prices.parquet"
 
-NEWS_GLOB = "NewsResult_*.xlsx"   # 프로젝트 루트의 BIGKinds 원본 export
+NEWS_GLOB = "data/NewsResult_*.xlsx"   # data/ 의 BIGKinds 원본 export (2021~2024)
 
 SEED = 42
 

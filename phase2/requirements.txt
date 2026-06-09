@@ -18,3 +18,6 @@ tqdm>=4.66
 # --- Phase 1 (데이터 구축) 에도 필요 ---
 openpyxl>=3.1        # BIGKinds xlsx 읽기
 pykrx>=1.0           # 가격 시계열 연장 다운로드 (build_prices.py)
+
+# 가격 시계열(지수) — KRX 자격증명 불필요, pykrx 대체
+finance-datareader>=0.9

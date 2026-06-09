@@ -1,0 +1,18 @@
+\begin{table}[t]\centering
+\caption{Test macro-F1 by method, horizon, and index.}
+\begin{tabular}{llrrrr}
+\toprule
+index & method & $h{=}1$ & $h{=}5$ & $h{=}21$ & $h{=}252$ \\
+\midrule
+KOSPI & random & 0.333 & 0.333 & 0.333 & 0.333 \\
+KOSPI & wordcount & 0.306 & 0.324 & 0.354 & 0.232 \\
+KOSPI & TF-IDF & 0.300 & 0.350 & 0.304 & 0.224 \\
+KOSPI & RoBERTa & 0.318 & 0.298 & 0.325 & 0.277 \\
+\midrule
+KOSDAQ & random & 0.333 & 0.333 & 0.333 & 0.333 \\
+KOSDAQ & wordcount & 0.318 & 0.279 & 0.294 & 0.227 \\
+KOSDAQ & TF-IDF & 0.265 & 0.279 & 0.291 & 0.294 \\
+KOSDAQ & RoBERTa & 0.293 & 0.275 & 0.317 & 0.288 \\
+\bottomrule
+\end{tabular}
+\end{table}
