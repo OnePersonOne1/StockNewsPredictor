@@ -26,7 +26,8 @@ _ROOT = pathlib.Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from phase1.config import DATASET_FINAL, HORIZONS, INDEX_NAMES, RESULTS_DIR  # noqa: E402
+from phase1.config import (DATASET_FINAL, HORIZONS, INDEX_NAMES,  # noqa: E402
+                           RESULTS_DIR, BASELINE_TOPN)
 
 EVAL_SPLIT = "test"
 
@@ -46,8 +47,10 @@ NEG_SEEDS = [
 
 
 def _day_doc(headlines) -> str:
-    """행의 헤드라인 배열 → 공백 join 단일 문자열."""
-    return " ".join(str(h) for h in headlines)
+    """행의 헤드라인 배열 → 공백 join 단일 문자열.
+    EXP-R: BASELINE_TOPN>0 이면 최신 N개만(RoBERTa 와 공정 비교)."""
+    hs = list(headlines)[:BASELINE_TOPN] if BASELINE_TOPN > 0 else headlines
+    return " ".join(str(h) for h in hs)
 
 
 def _net_score(doc: str) -> int:

@@ -106,13 +106,19 @@ USE_BODY = os.environ.get("USE_BODY", "0") == "1"
 INCLUDE_IT = os.environ.get("INCLUDE_IT", "0") == "1"
 # EXP-N: IT_section 단독 (본체 data/ 미사용, data/IT_section 만 코퍼스로)
 IT_ONLY = os.environ.get("IT_ONLY", "0") == "1"
+# EXP-Q: 일별 헤드라인 30개 선택 방식. recent=최신순(기본), random=행별 시드 랜덤 부분집합
+HEADLINE_SAMPLE = os.environ.get("HEADLINE_SAMPLE", "recent")
+# EXP-R: TF-IDF/wordcount 도 RoBERTa 와 동일하게 일별 최신 N개로 제한(공정 비교). 0=전체(기본)
+BASELINE_TOPN = int(os.environ.get("BASELINE_TOPN", "0"))
 
 # 프로필·필터·변형 조합별 접미사 (y2024+all+title → 빈 문자열 → 기존 산출물 보존)
 _TAGS = ([] if EXP_PROFILE == "y2024" else [EXP_PROFILE]) \
         + ([] if HEADLINE_FILTER == "all" else [HEADLINE_FILTER]) \
         + (["itonly"] if IT_ONLY else []) \
         + (["itaug"] if INCLUDE_IT else []) \
-        + (["body"] if USE_BODY else [])
+        + (["body"] if USE_BODY else []) \
+        + ([] if HEADLINE_SAMPLE == "recent" else [HEADLINE_SAMPLE]) \
+        + ([f"top{BASELINE_TOPN}"] if BASELINE_TOPN else [])
 _SUF = ("_" + "_".join(_TAGS)) if _TAGS else ""
 
 _DS_BASE = _P["dataset_file"][:-len(".parquet")]

@@ -25,14 +25,18 @@ _ROOT = pathlib.Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
-from phase1.config import DATASET_FINAL, HORIZONS, INDEX_NAMES, SEED, RESULTS_DIR  # noqa: E402
+from phase1.config import (DATASET_FINAL, HORIZONS, INDEX_NAMES, SEED,  # noqa: E402
+                           RESULTS_DIR, BASELINE_TOPN)
 
 EVAL_SPLIT = "test"   # 기저 성능은 test 에서 보고 (train fit)
 
 
 def _docs(df: pd.DataFrame) -> list[str]:
-    """행별 헤드라인 리스트 → 공백 join 단일 document."""
-    return [" ".join(str(h) for h in row) for row in df["headlines"]]
+    """행별 헤드라인 리스트 → 공백 join 단일 document.
+    EXP-R: BASELINE_TOPN>0 이면 RoBERTa 와 동일하게 최신 N개만(공정 비교)."""
+    n = BASELINE_TOPN
+    return [" ".join(str(h) for h in (list(row)[:n] if n > 0 else row))
+            for row in df["headlines"]]
 
 
 def run() -> pd.DataFrame:

@@ -33,6 +33,8 @@
 | [EXP-N](experiments/EXP-N_it-section-only.md) | IT_section 단독 | 완료 | **IT 단독은 약함**(macro-F1 0.18, IC +0.035 vs 본체 +0.146) — 신호는 경제 프레이밍에 |
 | [EXP-O](experiments/EXP-O_full-corpus-no-filter.md) | data/ 전체 결합(비여과) | 완료 | **RoBERTa 는 본체와 완전 동일**(top-30 절단 → IT_section 176번째라 투명), TF-IDF만 미세 희석 |
 | [EXP-P](experiments/EXP-P_max-headlines.md) | MAX_HEADLINES 확대(공정성) | 완료 | **헤드라인 더 넣으면 RoBERTa 나빠짐**(mh30→200: macroF1 0.298→0.181). top-30 이 근사 최적 |
+| [EXP-Q](experiments/EXP-Q_random-vs-recent.md) | top-30 최신순 vs 랜덤 | 완료 | **최신순 우위**(IC +0.146±0.026 vs 랜덤 +0.028±0.062) — 셔플은 도움 안 됨 |
+| [EXP-R](experiments/EXP-R_fair-topn.md) | 공정 비교(전부 top-30, 3cls+이진) | 완료 | **동일 입력서도 반전 유지**: 3-class=TF-IDF(0.368) / IC=RoBERTa(+0.182) |
 
 **고찰**: [모델 유형 × 입력 정제의 상호작용](discussion.md) — BoW 는 정제(차원↓)가 큰 레버,
 LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ trade-off.

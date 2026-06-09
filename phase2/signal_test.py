@@ -83,7 +83,10 @@ def tfidf_scores():
         from phase1.build_labels import assign_split
         df["split"] = assign_split(df)
     df = apply_labels(df, compute_sigma(df[df.split == "train"]))
-    docs = lambda s: [" ".join(str(x) for x in row) for row in s["headlines"]]
+    from phase1.config import BASELINE_TOPN
+    _n = BASELINE_TOPN
+    docs = lambda s: [" ".join(str(x) for x in (list(row)[:_n] if _n > 0 else row))
+                      for row in s["headlines"]]
     rows = []
     for idx in INDEX_NAMES:
         sub = df[df.index_name == idx]

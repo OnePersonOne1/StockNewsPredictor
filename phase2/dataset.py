@@ -29,7 +29,7 @@ if str(_ROOT) not in sys.path:
 
 from phase1.config import (  # noqa: E402
     DATASET_FINAL, HORIZONS, MAX_HEADLINES, MAX_LENGTH,
-    LABEL2IDX, INDEX_NAMES,
+    LABEL2IDX, INDEX_NAMES, HEADLINE_SAMPLE,
 )
 from phase1.build_labels import compute_sigma, apply_labels, assign_split  # noqa: E402
 
@@ -76,8 +76,14 @@ class NewsHeadlineDataset(Dataset):
     def __getitem__(self, idx: int):
         row = self.df.iloc[idx]
 
-        # 최신순 상위 max_headlines (parquet 에 이미 최신순 저장됨)
-        headlines = [str(h) for h in list(row["headlines"])[:self.max_headlines]]
+        # 헤드라인 선택 (EXP-Q): recent=최신순 상위 N / random=행별 시드 랜덤 N개
+        all_h = [str(h) for h in row["headlines"]]
+        if HEADLINE_SAMPLE == "random" and len(all_h) > self.max_headlines:
+            rng = np.random.default_rng(idx)  # 행별 결정적 → 재현 가능
+            sel = np.sort(rng.choice(len(all_h), self.max_headlines, replace=False))
+            headlines = [all_h[i] for i in sel]
+        else:
+            headlines = all_h[:self.max_headlines]   # 최신순 상위 N (기본)
         n_actual = len(headlines)
 
         enc = self.tokenizer(
