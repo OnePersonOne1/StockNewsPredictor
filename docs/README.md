@@ -27,6 +27,7 @@
 | [EXP-H](experiments/EXP-H_signal-test.md) | 신호 검정(이진·IC·백테스트) | 완료 | **macro-F1 이 약신호를 가렸음**: RoBERTa IC 24/24 시드·셀 양수, KOSPI h5 IC 0.15(p<.05) |
 | [EXP-I](experiments/EXP-I_signal-interpret.md) | 신호의 출처 해석 | 완료 | **KOSPI h5 고확신날 적중률 67%**, 어닝·미국매크로·금리 헤드라인에 주목 |
 | [EXP-J](experiments/EXP-J_high-confidence.md) | 고확신 구간 정량화 | 완료 | KOSPI h5 고확신서 이진acc 0.54→0.66, IC 0.18→0.21 (단 n↓·백테스트 비유의) |
+| [EXP-K](experiments/EXP-K_body-text.md) | 본문(제목+본문) 사용 | 완료 | **개선 없음** — 핵심 IC 오히려 약화(KOSPI h5 0.18→0.09), 제목이 신호 핵심 |
 
 **고찰**: [모델 유형 × 입력 정제의 상호작용](discussion.md) — BoW 는 정제(차원↓)가 큰 레버,
 LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ trade-off.
