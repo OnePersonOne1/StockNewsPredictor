@@ -23,6 +23,7 @@
 | [EXP-D](experiments/EXP-D_multiyear-plan.md) | 2021–2023 학습 → 2024 예측 | **완료** | **데이터 확대로 RoBERTa 붕괴 해소**(attention·예측 부활), 단 모든 방법 ~무작위 |
 | [EXP-E](experiments/EXP-E_multiyear-filter.md) | 다년 × 관련성 필터 결합 | 완료 | **필터+TF-IDF 최강**(KOSPI h1 0.380), 필터는 RoBERTa 엔 무이득(market 은 해로움) |
 | [EXP-F](experiments/EXP-F_datasize-vs-period.md) | 데이터 크기 vs 2025 특수성 | 완료 | **붕괴 원인=데이터 크기** (정상기 2021/22/23 소표본도 붕괴), 2025 특수성 아님 |
+| [EXP-G](experiments/EXP-G_it-sector-filter.md) | IT/반도체 섹터 필터 | 완료(시범) | **IT 9%가 전체에 준하는 신호**(섹터 비중↑ 지지), RoBERTa 셀차는 시드 노이즈 |
 
 **고찰**: [모델 유형 × 입력 정제의 상호작용](discussion.md) — BoW 는 정제(차원↓)가 큰 레버,
 LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ trade-off.
@@ -54,6 +55,11 @@ LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ tr
    선호.** 가장 강한 예측기 = **시장 카테고리 정제 TF-IDF**(KOSPI 단기).
 4. h21/h252 는 짧은 test 창(2024-only)에선 단일클래스로 무의미했으나, **test 를
    2024 전체로 늘리면(EXP-D) 의미 있는 값**을 가진다 → 평가 설계가 결론을 좌우.
+5. **IT/반도체 섹터에 신호가 농축**(EXP-G): 전체의 9%인 IT 헤드라인만으로 전체에 준하는
+   예측력 → 한국장의 높은 IT 비중과 정합. (단 IT 과소표집 가능, 시범 단계.)
+6. **방법론 caveat — RoBERTa 단일 시드 변동성**: market_it 을 4개 시드로 재학습 시 best
+   val 0.196~0.269. **RoBERTa 단일 셀 수치는 ±0.04+ 불확실**하므로 필터 간 미세 비교는
+   TF-IDF(결정적)와 '경향'에 무게를 둔다. 향후 다중 시드 평균이 정도.
 
 ### 방법론 사다리 — 2024-only (train 406, test 40; h=1 / h=5)
 

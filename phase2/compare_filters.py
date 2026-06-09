@@ -25,9 +25,9 @@ from phase1.config import HORIZONS, INDEX_NAMES, PHASE2_DIR, EXP_PROFILE  # noqa
 # 프로필 인식: y2024 → results{,_market,_macro}; multiyear → results_multiyear{,_market,_macro}
 _PSUF = "" if EXP_PROFILE == "y2024" else f"_{EXP_PROFILE}"
 RESULTS_MAIN = PHASE2_DIR / f"results{_PSUF}"
-FILTERS = [("all", PHASE2_DIR / f"results{_PSUF}"),
-           ("market", PHASE2_DIR / f"results{_PSUF}_market"),
-           ("macro", PHASE2_DIR / f"results{_PSUF}_macro")]
+_FILTER_NAMES = ["all", "market", "macro", "it", "market_it"]
+FILTERS = [(f, PHASE2_DIR / (f"results{_PSUF}" + ("" if f == "all" else f"_{f}")))
+           for f in _FILTER_NAMES]
 MODELS = [("TF-IDF", "baseline_metrics.csv"), ("RoBERTa", "test_metrics.csv")]
 
 
@@ -63,10 +63,11 @@ def _plot(long: pd.DataFrame):
     _setup_korean_font()
     (RESULTS_MAIN / "figures").mkdir(parents=True, exist_ok=True)
 
-    order = ["all", "market", "macro"]
+    present = set(long["filter"].unique())
+    order = [f for f in _FILTER_NAMES if f in present]
     x = np.arange(len(order))
     # 주 결과 h=1,5 만, 2x2 (model × horizon), 막대 그룹=index
-    fig, axes = plt.subplots(2, 2, figsize=(11, 7), sharey=True)
+    fig, axes = plt.subplots(2, 2, figsize=(2.2 * len(order) + 4, 7), sharey=True)
     for col, h in enumerate((1, 5)):
         for row, model in enumerate(["TF-IDF", "RoBERTa"]):
             ax = axes[row, col]
@@ -96,14 +97,17 @@ def run():
         raise RuntimeError("입력 결과 CSV 없음 — 각 필터로 baseline/evaluate 먼저 실행.")
     long.to_csv(RESULTS_MAIN / "filter_ablation.csv", index=False, encoding="utf-8-sig")
 
+    present = set(long["filter"].unique())
+    order = [f for f in _FILTER_NAMES if f in present]
     md = ["# 헤드라인 관련성 필터 ablation — test macro-F1", "",
-          "all=전체, market=증권_증시, macro=금융·증시·거시. 주 결과는 h=1,5.", ""]
+          "all=전체, market=증권_증시, macro=금융·증시·거시, it=IT_과학+반도체, "
+          "market_it=증권+IT+반도체. 주 결과는 h=1,5.", ""]
     for model, _ in MODELS:
         md += [f"## {model}", "",
                "| index | filter | " + " | ".join(f"h={h}" for h in HORIZONS) + " |",
                "|---|---|" + "---|" * len(HORIZONS)]
         for idx in INDEX_NAMES:
-            for filt in ["all", "market", "macro"]:
+            for filt in order:
                 vals = []
                 for h in HORIZONS:
                     v = long[(long.model == model) & (long["filter"] == filt)

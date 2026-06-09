@@ -83,7 +83,7 @@ def evaluate(model, loader, criterion, device):
 
 
 def train(args):
-    seed_everything()
+    seed_everything(getattr(args, "seed", SEED))
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"device: {device} | encoder: {ENCODER_NAME}")
 
@@ -156,6 +156,8 @@ def build_argparser():
     p.add_argument("--batch-size", type=int, default=BATCH_SIZE)
     p.add_argument("--max-headlines", type=int, default=MAX_HEADLINES)
     p.add_argument("--num-workers", type=int, default=0)
+    p.add_argument("--seed", type=int, default=SEED,
+                   help="시드(학습 변동성 점검용). 기본=config.SEED")
     p.add_argument("--smoke", action="store_true",
                    help="초소형 1-step 검증 (CPU 가능)")
     return p

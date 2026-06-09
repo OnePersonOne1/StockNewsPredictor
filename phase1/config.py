@@ -87,9 +87,13 @@ _P = _PROFILES[EXP_PROFILE]
 # ===========================================================================
 HEADLINE_FILTER = os.environ.get("HEADLINE_FILTER", "all")
 _FILTERS = {
-    "all":    None,
-    "market": r"증권_증시",
-    "macro":  r"증권_증시|금융_재테크|국제경제|외환|경제일반",
+    "all":       None,
+    "market":    r"증권_증시",
+    "macro":     r"증권_증시|금융_재테크|국제경제|외환|경제일반",
+    # EXP-G: 한국장의 높은 IT/반도체 비중 반영. 반도체는 경제>반도체로 IT_과학과
+    # 별도 분류되어 둘 다 포함. it=섹터 단독, market_it=시장+섹터(볼륨↑로 RoBERTa 보완).
+    "it":        r"IT_과학|반도체",
+    "market_it": r"증권_증시|IT_과학|반도체",
 }
 if HEADLINE_FILTER not in _FILTERS:
     raise ValueError(f"알 수 없는 HEADLINE_FILTER={HEADLINE_FILTER!r} "
