@@ -23,6 +23,9 @@
 | [EXP-D](experiments/EXP-D_multiyear-plan.md) | 2021–2023 학습 → 2024 예측 | **완료** | **데이터 확대로 RoBERTa 붕괴 해소**(attention·예측 부활), 단 모든 방법 ~무작위 |
 | [EXP-E](experiments/EXP-E_multiyear-filter.md) | 다년 × 관련성 필터 결합 | 완료 | **필터+TF-IDF 최강**(KOSPI h1 0.380), 필터는 RoBERTa 엔 무이득(market 은 해로움) |
 
+**고찰**: [모델 유형 × 입력 정제의 상호작용](discussion.md) — BoW 는 정제(차원↓)가 큰 레버,
+LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ trade-off.
+
 ## 데이터 개요 (2024)
 
 - 헤드라인 104,920건(한국경제/조선일보/한겨레, 경제·국제), 일평균 ~287건.
