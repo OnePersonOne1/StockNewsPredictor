@@ -150,6 +150,48 @@ def _plot_heatmap(rows):
     return out
 
 
+def _plot_attention_maps(rows, stats, n_examples: int = 4):
+    """가장 차별화가 큰(top-1 lift 최대) 날들의 헤드라인별 α map (가로 막대)."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    _setup_korean_font()
+    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+
+    # top1_lift 큰 순으로 대표 행 선택 (가장 '집중된' 사례)
+    pick = stats.sort_values("top1_lift", ascending=False).head(n_examples)
+    keyed = {(r["date"], r["index"]): r for r in rows}
+
+    ncol = 2
+    nrow = int(np.ceil(len(pick) / ncol))
+    fig, axes = plt.subplots(nrow, ncol, figsize=(13, 4.2 * nrow))
+    axes = np.atleast_1d(axes).ravel()
+    for ax, (_, prow) in zip(axes, pick.iterrows()):
+        r = keyed[(prow["date"], prow["index"])]
+        a = r["alpha"]; hs = r["headlines"]
+        order = np.argsort(a)                       # 오름차순: 큰 값이 위로
+        a_s = a[order]
+        labels = [(hs[j][:28] + "…") if len(hs[j]) > 28 else hs[j] for j in order]
+        y = np.arange(len(a_s))
+        colors = plt.cm.viridis(a_s / a_s.max())
+        ax.barh(y, a_s, color=colors)
+        ax.axvline(1.0 / len(a_s), color="red", ls="--", lw=1,
+                   label="균일 1/n=%.4f" % (1.0 / len(a_s)))
+        ax.set_yticks(y); ax.set_yticklabels(labels, fontsize=6)
+        ax.set_xlabel("attention α")
+        ax.set_title(f"{r['date']} {r['index']}  "
+                     f"(top-1 lift {prow['top1_lift']:.2f}×, "
+                     f"Hnorm={prow['norm_entropy']:.3f})", fontsize=9)
+        ax.legend(fontsize=7, loc="lower right")
+    for ax in axes[len(pick):]:
+        ax.axis("off")
+    fig.suptitle("Attention map — 헤드라인별 가중치 (가장 집중된 test 사례)", fontsize=12)
+    fig.tight_layout(rect=(0, 0, 1, 0.98))
+    out = FIGURES_DIR / "attention_map.png"
+    fig.savefig(out, dpi=150); plt.close(fig)
+    return out
+
+
 def run(ckpt_path=BEST_CKPT):
     ckpt_path = pathlib.Path(ckpt_path)
     if not ckpt_path.exists():
@@ -186,11 +228,12 @@ def run(ckpt_path=BEST_CKPT):
 
     fig1 = _plot_entropy(stats)
     fig2 = _plot_heatmap(rows)
-    _report(summary, hi, lo, stats, fig1, fig2)
+    fig3 = _plot_attention_maps(rows, stats)
+    _report(summary, hi, lo, stats, fig1, fig2, fig3)
     return summary
 
 
-def _report(summary, hi, lo, stats, fig1, fig2):
+def _report(summary, hi, lo, stats, fig1, fig2, fig3):
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     (RESULTS_DIR / "attention_stats.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -214,7 +257,7 @@ def _report(summary, hi, lo, stats, fig1, fig2):
         h = f"{hi[i][0]} ({hi[i][1]})" if i < len(hi) else ""
         l = f"{lo[i][0]} ({lo[i][1]})" if i < len(lo) else ""
         md.append(f"| {i+1} | {h} | {l} |")
-    md += ["", f"그림: `{fig1.name}`, `{fig2.name}`"]
+    md += ["", f"그림: `{fig1.name}`, `{fig2.name}`, `{fig3.name}`"]
     (RESULTS_DIR / "attention_analysis.md").write_text("\n".join(md), encoding="utf-8")
 
     print("=" * 64)
@@ -228,6 +271,7 @@ def _report(summary, hi, lo, stats, fig1, fig2):
     print("저장:", RESULTS_DIR / "attention_per_row.csv")
     print("저장:", fig1)
     print("저장:", fig2)
+    print("저장:", fig3)
 
 
 if __name__ == "__main__":

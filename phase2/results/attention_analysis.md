@@ -27,4 +27,4 @@
 | 14 | 선포 (4) | 검찰 (4) |
 | 15 | 증시 (4) | 포드 (4) |
 
-그림: `attention_entropy.png`, `attention_heatmap.png`
+그림: `attention_entropy.png`, `attention_heatmap.png`, `attention_map.png`
