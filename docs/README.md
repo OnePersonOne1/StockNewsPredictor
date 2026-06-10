@@ -40,6 +40,38 @@
 **고찰**: [모델 유형 × 입력 정제의 상호작용](discussion.md) — BoW 는 정제(차원↓)가 큰 레버,
 LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ trade-off.
 
+## 학습 하이퍼파라미터 (실험별 정리)
+
+**공통 기본값**(아래 표에 별도 표기 없으면): encoder `klue/roberta-base`(full fine-tune),
+optimizer AdamW, **lr 2e-5**, weight_decay 0.01, warmup_ratio 0.1, **epochs 4**, grad_clip 1.0,
+loss = 4-horizon CE 평균, best val macro-F1 체크포인트, **batch 16**(`--batch-size 16`;
+config 기본 8은 대부분 override), **MAX_HEADLINES 30**, MAX_LENGTH 64. 다중시드 = {42,0,1,2,3,4}.
+
+| EXP | 데이터(프로필) | batch | epochs | mh | max_len | lr | 시드 | 특이 |
+|---|---|---|---|---|---|---|---|---|
+| A | y2024 | 16 | 4 | 30 | 64 | 2e-5 | 42 | 주 모델 |
+| B | y2024 | 32 | 30 | 100 | 64 | **1e-3** | 42 | **freeze**, head만 학습(임베딩 1회 캐시) |
+| C | y2024 × market/macro | 16 | 4 | 30 | 64 | 2e-5 | 42 | |
+| D | multiyear | 16 | 4 | 30 | 64 | 2e-5 | 42 | |
+| E | multiyear × market/macro | 16 | 4 | 30 | 64 | 2e-5 | 42 | |
+| F | y2021/y2022/y2023 | 16 | 4 | 30 | 64 | 2e-5 | 42 | 소표본 복제 |
+| G | multiyear × it/market_it | 16 | 4 | 30 | 64 | 2e-5 | 42 (+market_it 0,1,2) | |
+| H | multiyear (D 체크포인트 재사용) | 16 | 4 | 30 | 64 | 2e-5 | **42,0–4 (6)** | IC 견고성 |
+| I·J | multiyear (D 재사용) | — | — | 30 | 64 | — | 42 | **추론만**(해석/고확신) |
+| K | multiyear body(제목+본문) | **4** | 4 | 30 | **128** | 2e-5 | 42 | OOM 회피 batch↓ |
+| L | multiyear + IT_section 보강 | 16 | 4 | 30 | 64 | 2e-5 | 42 | |
+| M | y2024 / y2022 / multiyear | 16 | 4 | 30 | 64 | 2e-5 | **0–4(+H의 6)** | 데이터크기 축 |
+| N | multiyear IT_section 단독 | 16 | 4 | 30 | 64 | 2e-5 | **42,0–4 (6)** | |
+| O | multiyear 결합 전체(비여과) | 16 | 4 | 30 | 64 | 2e-5 | 42 (+0,1 중단) | 입력=D 와 동일 판명 |
+| P | multiyear | **8** | 4 | **100 / 200** | 64 | 2e-5 | 42 | **GRAD_CKPT**(메모리) |
+| Q | multiyear random-30 | 16 | 4 | 30 | 64 | 2e-5 | **42,0–4 (6)** | 랜덤 선택 |
+| R | (TF-IDF·wordcount) | — | — | 30 | — | — | — | **NN 학습 없음**; RoBERTa 는 D/H 참조 |
+| S | multiyear time-order | 16 | 4 | 30 | 64 | 2e-5 | **42,0–4 (6)** | 시각 정렬 |
+
+> 비고: 고정 설계(불변)는 encoder=klue/roberta-base, ε=0.3σ, σ-train-only, temporal split.
+> TF-IDF 기저: `LogisticRegression(max_iter=2000, class_weight=balanced)`, `TfidfVectorizer(min_df=2,
+> max_features=20000)`. wordcount: 시드 60개(긍30/부30), train 분위수 매칭.
+
 ## 데이터 개요 (2024)
 
 - 헤드라인 104,920건(한국경제/조선일보/한겨레, 경제·국제), 일평균 ~287건.
