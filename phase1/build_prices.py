@@ -23,7 +23,8 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from config import PRICE_BACK_START  # noqa: E402  (프로필별 가격 백필 시작)
+from config import (PRICE_BACK_START, STOCK_TICKER, INDEX_NAMES,  # noqa: E402
+                    PRICES_PARQUET)
 
 # --- 경로 / 상수 -----------------------------------------------------------
 ROOT = Path(__file__).resolve().parents[1]          # 프로젝트 루트
@@ -67,7 +68,29 @@ def _download_range(index_name: str, start: str, end: str) -> pd.DataFrame:
     return out
 
 
+def _download_ticker(ticker: str, start: str, end: str) -> pd.DataFrame:
+    """FDR 로 개별 종목(티커) 종가 다운로드."""
+    import FinanceDataReader as fdr
+    s = f"{start[:4]}-{start[4:6]}-{start[6:]}"; e = f"{end[:4]}-{end[4:6]}-{end[6:]}"
+    df = fdr.DataReader(ticker, s, e)
+    if df is None or len(df) == 0:
+        raise RuntimeError(f"종목 {ticker} {start}~{end} 다운로드 비어있음")
+    out = df.reset_index()[["Date", "Close"]].rename(columns={"Date": "date", "Close": "close"})
+    out["date"] = pd.to_datetime(out["date"])
+    return out
+
+
 def build() -> pd.DataFrame:
+    if STOCK_TICKER:  # EXP-V: 단일 종목 (FDR 티커, 2021~2026 전체)
+        name = INDEX_NAMES[0]
+        px = _download_ticker(STOCK_TICKER, "20210101", EXTEND_END)
+        px["index_name"] = name
+        px = px[["date", "index_name", "close"]].sort_values("date").reset_index(drop=True)
+        PRICES_PARQUET.parent.mkdir(parents=True, exist_ok=True)
+        px.to_parquet(PRICES_PARQUET, index=False)
+        print(f"[{name}({STOCK_TICKER})] {len(px)} 거래일 "
+              f"({px['date'].min().date()}~{px['date'].max().date()}) → {PRICES_PARQUET.name}")
+        return px
     frames = []
     for index_name in ("KOSPI", "KOSDAQ"):
         parts = [_load_2024(index_name)]                 # 2024 (보유 CSV)

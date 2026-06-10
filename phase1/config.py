@@ -70,10 +70,32 @@ for _yr in (2021, 2022, 2023):
         "data_years": (_yr,),
         "price_back_start": None,
     }
+
+# 단일 종목 프로필(EXP-V): 삼성전자(005930) 단독. 뉴스=data/Samsung_Electronics,
+# 가격=FDR 005930, 단일 'index'=삼성전자. 2021~2025(2025 포함). 헤드라인 일평균 ~13건.
+_PROFILES["samsung"] = {
+    "split_bounds": {  # train 2021~2023 / val 2024 / test 2025
+        "train": ("2021-01-01", "2023-12-31"),
+        "val":   ("2024-01-01", "2024-12-31"),
+        "test":  ("2025-01-01", "2025-12-31"),
+    },
+    "dataset_file": "dataset_samsung.parquet",
+    "data_years": (2021, 2022, 2023, 2024, 2025),
+    "price_back_start": None,
+    "index_names": ("삼성전자",),
+    "stock_ticker": "005930",
+    "news_glob": "data/Samsung_Electronics/NewsResult_*.xlsx",
+    "prices_file": "prices_samsung.parquet",
+}
 if EXP_PROFILE not in _PROFILES:
     raise ValueError(f"알 수 없는 EXP_PROFILE={EXP_PROFILE!r} "
                      f"(가능: {list(_PROFILES)})")
 _P = _PROFILES[EXP_PROFILE]
+
+# 종목/뉴스/가격 소스 (프로필 주입; 단일종목 프로필이면 override)
+NEWS_GLOB = _P.get("news_glob", NEWS_GLOB)
+STOCK_TICKER = _P.get("stock_ticker")          # 단일종목이면 FDR 티커, 아니면 None
+PRICES_PARQUET = _PROC / _P.get("prices_file", "prices.parquet")
 
 # ===========================================================================
 # 헤드라인 관련성 필터 (HEADLINE_FILTER 환경변수; 기본 all)
@@ -141,7 +163,7 @@ DATASET_FINAL = _PROC / (_DS_BASE
 # ===========================================================================
 # Phase 1 — 데이터셋 / 라벨 구축
 # ===========================================================================
-INDEX_NAMES = ("KOSPI", "KOSDAQ")
+INDEX_NAMES = tuple(_P.get("index_names", ("KOSPI", "KOSDAQ")))  # 단일종목이면 (삼성전자,)
 HORIZONS = (1, 5, 21, 252)        # 예측 horizon (거래일)
 
 # 3-class ternary 라벨 임계: eps_h = EPS_SIGMA_MULT * sigma_h
