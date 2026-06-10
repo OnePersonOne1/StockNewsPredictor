@@ -36,6 +36,9 @@
 | [EXP-Q](experiments/EXP-Q_random-vs-recent.md) | top-30 최신순 vs 랜덤 | 완료 | **최신순 우위**(IC +0.146±0.026 vs 랜덤 +0.028±0.062) — 셔플은 도움 안 됨 |
 | [EXP-R](experiments/EXP-R_fair-topn.md) | 공정 비교(전부 top-30, 3cls+이진) | 완료 | **동일 입력서도 반전 유지**: 3-class=TF-IDF(0.368) / IC=RoBERTa(+0.182) |
 | [EXP-S](experiments/EXP-S_time-order.md) | 실제 시각 정렬(버려진 타임스탬프) | 완료 | **시각순 ≥ 날짜순 > 랜덤**: KOSPI h1 IC +0.086→+0.134(단기 개선). time-order 권고 |
+| [EXP-T](experiments/EXP-T_epochs.md) | 4 epoch 충분성(학습 부족) | 완료 | **4 epoch 은 대표본에 부족**: multiyear 10ep 에서 macroF1 0.298→0.339(KOSPIh5). 다년 결과 보수적 |
+| [EXP-U](experiments/EXP-U_fulldata-binary.md) | 전체 헤드라인 × 이진 × 30ep | **대기(최종)** | 전체 mh × 30 epoch 재학습(며칠 소요). EXP-P 재검 |
+| [EXP-V](experiments/EXP-V_samsung-single-stock.md) | 삼성전자 단일종목 | 진행 | 단일종목(2021–25, test 2025), 전체 헤드라인 × 30ep, 3-class+binary |
 
 **고찰**: [모델 유형 × 입력 정제의 상호작용](discussion.md) — BoW 는 정제(차원↓)가 큰 레버,
 LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ trade-off.
