@@ -47,6 +47,16 @@
 (삼성전자 OR SK하이닉스 OR LG에너지솔루션 OR 삼성바이오로직스 OR 현대차 OR 기아 OR 셀트리온 OR KB금융 OR NAVER OR 신한지주 OR 현대모비스 OR 삼성물산 OR 삼성SDI OR POSCO홀딩스 OR LG화학 OR 한화에어로스페이스 OR 메리츠금융지주 OR 하나금융지주 OR HD현대중공업 OR 삼성생명 OR 카카오 OR 두산에너빌리티 OR KT OR LG전자 OR 크래프톤) AND (주가 OR 증시 OR 코스피 OR 코스닥 OR 시가총액 OR 실적 OR 영업이익 OR 순이익 OR 매출 OR 어닝 OR 목표주가 OR 투자의견 OR 배당 OR 자사주 OR 공매도 OR 외국인 OR 반도체 OR 수출 OR 신제품 OR 양산 OR 수주 OR 인수 OR 합병 OR 증권 OR 상장 OR 주식)
 ```
 
+### 단일 종목 — 삼성전자 단독 (주가 변동 실험용)
+삼성전자(005930) 하나만, 시장·반도체 맥락으로 한정:
+```
+삼성전자 AND (주가 OR 증시 OR 코스피 OR 실적 OR 영업이익 OR 순이익 OR 매출 OR 어닝 OR 목표주가 OR 투자의견 OR 배당 OR 자사주 OR 공매도 OR 외국인 OR 반도체 OR HBM OR 파운드리 OR D램 OR 낸드 OR 수출 OR 신제품 OR 양산 OR 수주 OR 증권 OR 주식)
+```
+- 더 깔끔히: 검색식은 `삼성전자` 만 쓰고 BIGKinds 통합분류 **경제>증권·반도체·산업/기업,
+  IT·과학**만 체크(권장 3 병행).
+- 가격: FinanceDataReader 로 `005930` 수집(자격증명 불필요, 2021~2026 확인됨).
+- 참고: 그룹명 `삼성` 은 노이즈가 크니 **단일종목엔 `삼성전자` 정확매칭** 권장.
+
 ### 권장 2 — 회사명 + 노이즈 NOT 제거 (맥락어가 부담스러우면)
 ```
 (삼성전자 OR SK하이닉스 OR ...) NOT (야구 OR 라이온즈 OR 트윈스 OR 이글스 OR 스포츠 OR 채용 OR 공채 OR 봉사 OR 기부 OR 헌혈 OR 드라마 OR 예능 OR 연예 OR 공연 OR 전시 OR 부고)
