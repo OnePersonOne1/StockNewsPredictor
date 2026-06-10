@@ -87,6 +87,13 @@ _PROFILES["samsung"] = {
     "news_glob": "data/Samsung_Electronics/NewsResult_*.xlsx",
     "prices_file": "prices_samsung.parquet",
 }
+# EXP-X: 2024 도 완전 held-out 으로 — train 2021-22 / val 2023 / test 2024+2025.
+# (samsung 의 모든 종목/뉴스/가격 설정 동일, split 만 변경)
+_PROFILES["samsung_cv"] = dict(_PROFILES["samsung"],
+    split_bounds={"train": ("2021-01-01", "2022-12-31"),
+                  "val":   ("2023-01-01", "2023-12-31"),
+                  "test":  ("2024-01-01", "2025-12-31")},
+    dataset_file="dataset_samsung_cv.parquet")
 if EXP_PROFILE not in _PROFILES:
     raise ValueError(f"알 수 없는 EXP_PROFILE={EXP_PROFILE!r} "
                      f"(가능: {list(_PROFILES)})")

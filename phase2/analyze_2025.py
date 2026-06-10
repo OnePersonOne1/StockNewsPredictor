@@ -66,27 +66,29 @@ def model_by_year(mh=64):
     tr_ds, val_ds, test_ds, _ = make_splits(DATASET_FINAL, tok, mh, MAX_LENGTH)
 
     recs = []
-    for ds, year in ((val_ds, 2024), (test_ds, 2025)):
+    for split, ds in (("val", val_ds), ("test", test_ds)):
         loader = torch.utils.data.DataLoader(ds, batch_size=16, shuffle=False)
-        df = ds.df.reset_index(drop=True); pos = 0
+        df = ds.df.reset_index(drop=True)
+        df["year"] = pd.to_datetime(df["date"]).dt.year
         pr = {h: [] for h in HORIZONS}
         for tokenized, _, _ in loader:
             tk = {k: v.to(device) for k, v in tokenized.items()}
-            out = model(**tk); B = tk["index_id"].size(0)
+            out = model(**tk)
             for h in HORIZONS:
                 pr[h].extend(out["logits"][f"h{h}"].argmax(-1).cpu().numpy().tolist())
-            pos += B
         for h in (1, 5):
-            ret = df[f"ret_h{h}"].to_numpy()
-            ok = ~np.isnan(ret)
-            pred_up = np.array(pr[h])[ok]            # 1=up,0=down
-            actual_up = (ret[ok] > 0).astype(int)
-            acc = float((pred_up == actual_up).mean())
-            always_up = float(actual_up.mean())       # 항상 up 적중률 = up 비율
-            recs.append({"year": year, "horizon": h, "n": int(ok.sum()),
-                         "model_acc": acc, "always_up_acc": always_up,
-                         "model_up_rate": float(pred_up.mean()),
-                         "actual_up_rate": always_up})
+            preds = np.array(pr[h]); ret = df[f"ret_h{h}"].to_numpy()
+            for year in sorted(df["year"].unique()):
+                ym = (df["year"].to_numpy() == year) & (~np.isnan(ret))
+                if ym.sum() < 5:
+                    continue
+                pred_up = preds[ym]; actual_up = (ret[ym] > 0).astype(int)
+                recs.append({"split": split, "year": int(year), "horizon": h,
+                             "n": int(ym.sum()),
+                             "model_acc": float((pred_up == actual_up).mean()),
+                             "always_up_acc": float(actual_up.mean()),
+                             "model_up_rate": float(pred_up.mean()),
+                             "actual_up_rate": float(actual_up.mean())})
     return pd.DataFrame(recs)
 
 
