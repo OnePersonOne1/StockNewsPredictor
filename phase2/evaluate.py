@@ -93,9 +93,21 @@ def _latex_table(res: pd.DataFrame, value: str, caption: str) -> str:
     return "\n".join(lines)
 
 
+def _font():
+    """한글 index_name(예: 삼성전자) legend 가 □ 로 깨지지 않도록 CJK 폰트 지정."""
+    import matplotlib
+    from matplotlib import font_manager
+    for fam in ("Noto Sans CJK KR", "Noto Sans CJK JP", "NanumGothic"):
+        if any(f.name == fam for f in font_manager.fontManager.ttflist):
+            matplotlib.rcParams["font.family"] = fam
+            break
+    matplotlib.rcParams["axes.unicode_minus"] = False
+
+
 def _decay_plot(res: pd.DataFrame):
     import matplotlib
     matplotlib.use("Agg")
+    _font()
     import matplotlib.pyplot as plt
     import matplotlib.ticker as mticker
 
@@ -104,15 +116,20 @@ def _decay_plot(res: pd.DataFrame):
     for idx in INDEX_NAMES:
         sub = res[res["index"] == idx].sort_values("horizon")
         ax.plot(sub["horizon"], sub["macro_f1"], marker="o", label=f"{idx} (model)")
-    # baseline 오버레이 (있으면)
-    base_csv = RESULTS_DIR / "baseline_metrics.csv"
-    if base_csv.exists():
-        base = pd.read_csv(base_csv)
+    # baseline 오버레이: TF-IDF + wordcount (RESULTS_DIR 에 csv 있으면)
+    for fname, tag, mk, ls in (("baseline_metrics.csv", "TF-IDF", "x", "--"),
+                               ("wordcount_metrics.csv", "wordcount", "s", "-.")):
+        csv = RESULTS_DIR / fname
+        if not csv.exists():
+            continue
+        bdf = pd.read_csv(csv)
         for idx in INDEX_NAMES:
-            sub = base[base["index"] == idx].sort_values("horizon")
-            ax.plot(sub["horizon"], sub["macro_f1"], marker="x", linestyle="--",
-                    alpha=0.6, label=f"{idx} (TF-IDF)")
-    ax.axhline(1/3, color="gray", ls=":", label="random (macro-F1≈1/3)")
+            sub = bdf[bdf["index"] == idx].sort_values("horizon")
+            if len(sub):
+                ax.plot(sub["horizon"], sub["macro_f1"], marker=mk, linestyle=ls,
+                        alpha=0.7, label=f"{idx} ({tag})")
+    rnd = 1 / len(CLASS_NAMES)          # 이진=0.50, 3-class≈0.33
+    ax.axhline(rnd, color="gray", ls=":", label=f"random (macro-F1≈{rnd:.2f})")
     ax.set_xscale("log"); ax.set_xticks(HORIZONS)
     ax.get_xaxis().set_major_formatter(mticker.ScalarFormatter())
     ax.set_xlabel("horizon (trading days)"); ax.set_ylabel("macro-F1")
@@ -120,6 +137,17 @@ def _decay_plot(res: pd.DataFrame):
     ax.legend(fontsize=8); fig.tight_layout()
     out = FIGURES_DIR / "horizon_decay.png"
     fig.savefig(out, dpi=150); plt.close(fig)
+    return out
+
+
+def replot():
+    """저장된 test_metrics.csv(+baseline/wordcount)로 horizon_decay.png 만 재생성.
+    모델 추론·GPU 불필요(다른 학습이 GPU 점유 중일 때 사용)."""
+    csv = RESULTS_DIR / "test_metrics.csv"
+    if not csv.exists():
+        raise FileNotFoundError(f"test_metrics.csv 없음: {csv} (evaluate 먼저 실행)")
+    out = _decay_plot(pd.read_csv(csv))
+    print("재생성:", out)
     return out
 
 
@@ -188,4 +216,7 @@ def _report(res, per_class, confusions):
 
 
 if __name__ == "__main__":
-    run()
+    if "--replot" in sys.argv:
+        replot()
+    else:
+        run()
