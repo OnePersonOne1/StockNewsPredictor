@@ -35,8 +35,8 @@
 │   └── Samsung_Electronics/   # 삼성전자 단독 검색식 export 2021~2025 (samsung 프로필)
 ├── kospi_2024.csv, kosdaq_2024.csv   # KRX 2024 종가(원본 시드)
 ├── KRX_download.py            # (참고) KRX 종가 수집 — 현재는 FDR 로 대체
-├── HANDOFF.md, HANDOFF_MULTIYEAR.md  # 세션 인수인계 / 다년 실험 런북
 ├── docs/                      # ★ 실험 보고서 (README=인덱스, experiments/EXP-*.md, discussion.md,
+│                              #   HANDOFF_for_report.md = 보고서 작성 인수인계,
 │                              #   bigkinds_company_keywords.md = 종목별 뉴스 수집 검색식)
 ├── phase1/                    # 데이터셋·라벨 구축
 │   ├── config.py              # 공용 설정 + 모든 실험 스위치(§2)
