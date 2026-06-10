@@ -21,11 +21,12 @@ _ROOT = pathlib.Path(__file__).resolve().parents[1]
 if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 from phase1.config import (DATASET_FINAL, ENCODER_NAME, HORIZONS, MAX_LENGTH,  # noqa
-                           CHECKPOINT_DIR, RESULTS_DIR, PHASE2_DIR)
+                           BEST_CKPT, RESULTS_DIR, PHASE2_DIR)
 from phase2.dataset import make_splits  # noqa: E402
 from phase2.model import HeadlineAttentionModel  # noqa: E402
 
-BIN_CKPT = PHASE2_DIR / "data" / "checkpoints_samsung_ordtime_bin" / "best.pt"
+# 현재 프로필의 binary 체크포인트(BINARY=1 환경에서 실행 → samsung 또는 samsung_cv).
+BIN_CKPT = BEST_CKPT
 
 
 def _font():

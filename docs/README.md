@@ -40,6 +40,7 @@
 | [EXP-U](experiments/EXP-U_fulldata-binary.md) | 전체 헤드라인 × 이진 × 30ep | **대기(최종)** | 전체 mh × 30 epoch 재학습(며칠 소요). EXP-P 재검 |
 | [EXP-V](experiments/EXP-V_samsung-single-stock.md) | 삼성전자 단일종목 | 완료 | OOS 2025서 약신호: 3-class 무작위 부근(RoBERTa h5 0.351), binary 0.43(과적합). TF-IDF/wordcount 동일입력 비교 |
 | [EXP-W](experiments/EXP-W_2025-exceptionality.md) | 2025 시장 예외성 | 완료 | **2025 +124% 폭등장이 원인**: 모델 2024선 적중 0.59(>무작위)나 2025선 up 24%만 예측(실제 62%)→실패 |
+| [EXP-X](experiments/EXP-X_clean-heldout-cv.md) | 2024 완전 held-out 재검증(train21–22/val23/test24+25) | 완료 | **2024 우위는 일부 낙관편향**(0.59→0.52, val선택 효과)이나 잔존; **2025 레짐이동 실패는 견고**(up 33% vs 실제 62%, 설계무관) |
 
 **고찰**: [모델 유형 × 입력 정제의 상호작용](discussion.md) — BoW 는 정제(차원↓)가 큰 레버,
 LLM 은 데이터·볼륨이 큰 레버이며 정제는 noise↓ vs volume↓ trade-off.
@@ -71,6 +72,10 @@ config 기본 8은 대부분 override), **MAX_HEADLINES 30**, MAX_LENGTH 64. 다
 | Q | multiyear random-30 | 16 | 4 | 30 | 64 | 2e-5 | **42,0–4 (6)** | 랜덤 선택 |
 | R | (TF-IDF·wordcount) | — | — | 30 | — | — | — | **NN 학습 없음**; RoBERTa 는 D/H 참조 |
 | S | multiyear time-order | 16 | 4 | 30 | 64 | 2e-5 | **42,0–4 (6)** | 시각 정렬 |
+| T | multiyear, multiyear_2024 | 16 | **10** | 30 | 64 | 2e-5 | 42 | **epoch 충분성**(곡선 관측) |
+| V | samsung (time) | **8** | **30** | **64** | 64 | 2e-5 | 42 | 단일종목, 3-class+binary |
+| W | samsung (V 체크포인트 재사용) | — | — | 64 | 64 | — | 42 | **추론만**(연도별 분석) |
+| X | samsung_cv (time) | **8** | **30** | **64** | 64 | 2e-5 | 42 | 2024 완전 held-out, 3-class+binary |
 
 > 비고: 고정 설계(불변)는 encoder=klue/roberta-base, ε=0.3σ, σ-train-only, temporal split.
 > TF-IDF 기저: `LogisticRegression(max_iter=2000, class_weight=balanced)`, `TfidfVectorizer(min_df=2,
