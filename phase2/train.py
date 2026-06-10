@@ -73,10 +73,12 @@ def evaluate(model, loader, criterion, device):
             trues[h].append(lb[f"h{h}"].cpu().numpy())
     per_h = {}
     f1s = []
+    from phase1.config import CLASS_IDX
     for h in HORIZONS:
         p = np.concatenate(preds[h]); t = np.concatenate(trues[h])
-        acc = accuracy_score(t, p)
-        from phase1.config import CLASS_IDX
+        m = t != -100                       # NaN(ignore) 제외
+        p, t = p[m], t[m]
+        acc = accuracy_score(t, p) if len(t) else float("nan")
         mf1 = f1_score(t, p, average="macro", labels=CLASS_IDX, zero_division=0)
         per_h[h] = {"acc": acc, "macro_f1": mf1}
         f1s.append(mf1)

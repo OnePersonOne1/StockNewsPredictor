@@ -1,0 +1,37 @@
+# encoder=klue/roberta-base lr=2e-05 wd=0.01 warmup=0.1 epochs=30 batch=8 mh=64 max_len=64 seed=42 freeze=False | train=739 val=244 test=242
+[epoch 1] train_loss=0.6947 val_loss=0.7125 val_macroF1(avg)=0.2745 | h1=0.301 h5=0.299 h21=0.249 h252=0.249
+   ✓ best 갱신 (val_macroF1=0.2745, epoch 1)
+[epoch 2] train_loss=0.6984 val_loss=0.6797 val_macroF1(avg)=0.3553 | h1=0.301 h5=0.319 h21=0.400 h252=0.400
+   ✓ best 갱신 (val_macroF1=0.3553, epoch 2)
+[epoch 3] train_loss=0.6844 val_loss=0.7021 val_macroF1(avg)=0.4332 | h1=0.363 h5=0.319 h21=0.494 h252=0.557
+   ✓ best 갱신 (val_macroF1=0.4332, epoch 3)
+[epoch 4] train_loss=0.6583 val_loss=0.7015 val_macroF1(avg)=0.4279 | h1=0.363 h5=0.411 h21=0.430 h252=0.508
+[epoch 5] train_loss=0.6159 val_loss=0.7187 val_macroF1(avg)=0.5017 | h1=0.439 h5=0.475 h21=0.514 h252=0.579
+   ✓ best 갱신 (val_macroF1=0.5017, epoch 5)
+[epoch 6] train_loss=0.5799 val_loss=0.7745 val_macroF1(avg)=0.4459 | h1=0.363 h5=0.458 h21=0.464 h252=0.499
+[epoch 7] train_loss=0.5483 val_loss=0.8589 val_macroF1(avg)=0.4514 | h1=0.411 h5=0.487 h21=0.450 h252=0.458
+[epoch 8] train_loss=0.5045 val_loss=0.7951 val_macroF1(avg)=0.4828 | h1=0.419 h5=0.471 h21=0.473 h252=0.569
+[epoch 9] train_loss=0.4761 val_loss=0.7867 val_macroF1(avg)=0.5396 | h1=0.524 h5=0.560 h21=0.505 h252=0.569
+   ✓ best 갱신 (val_macroF1=0.5396, epoch 9)
+[epoch 10] train_loss=0.4253 val_loss=0.8919 val_macroF1(avg)=0.5056 | h1=0.500 h5=0.520 h21=0.508 h252=0.495
+[epoch 11] train_loss=0.3666 val_loss=1.0979 val_macroF1(avg)=0.4989 | h1=0.484 h5=0.495 h21=0.507 h252=0.510
+[epoch 12] train_loss=0.3205 val_loss=1.1416 val_macroF1(avg)=0.5122 | h1=0.521 h5=0.524 h21=0.495 h252=0.509
+[epoch 13] train_loss=0.2837 val_loss=1.1385 val_macroF1(avg)=0.4813 | h1=0.481 h5=0.477 h21=0.484 h252=0.483
+[epoch 14] train_loss=0.2330 val_loss=1.3027 val_macroF1(avg)=0.4870 | h1=0.516 h5=0.492 h21=0.474 h252=0.467
+[epoch 15] train_loss=0.1737 val_loss=1.3739 val_macroF1(avg)=0.5025 | h1=0.484 h5=0.537 h21=0.475 h252=0.515
+[epoch 16] train_loss=0.1427 val_loss=1.4037 val_macroF1(avg)=0.5011 | h1=0.523 h5=0.520 h21=0.469 h252=0.492
+[epoch 17] train_loss=0.1085 val_loss=1.4043 val_macroF1(avg)=0.5069 | h1=0.503 h5=0.529 h21=0.499 h252=0.497
+[epoch 18] train_loss=0.0852 val_loss=1.6163 val_macroF1(avg)=0.4847 | h1=0.434 h5=0.525 h21=0.492 h252=0.489
+[epoch 19] train_loss=0.0679 val_loss=1.6411 val_macroF1(avg)=0.5023 | h1=0.517 h5=0.496 h21=0.506 h252=0.491
+[epoch 20] train_loss=0.0505 val_loss=1.7175 val_macroF1(avg)=0.4982 | h1=0.508 h5=0.504 h21=0.496 h252=0.485
+[epoch 21] train_loss=0.0411 val_loss=1.7344 val_macroF1(avg)=0.4916 | h1=0.500 h5=0.504 h21=0.464 h252=0.498
+[epoch 22] train_loss=0.0358 val_loss=1.8459 val_macroF1(avg)=0.4992 | h1=0.502 h5=0.507 h21=0.496 h252=0.492
+[epoch 23] train_loss=0.0321 val_loss=1.8153 val_macroF1(avg)=0.5060 | h1=0.502 h5=0.515 h21=0.505 h252=0.502
+[epoch 24] train_loss=0.0217 val_loss=1.9086 val_macroF1(avg)=0.4901 | h1=0.475 h5=0.508 h21=0.493 h252=0.484
+[epoch 25] train_loss=0.0200 val_loss=1.9561 val_macroF1(avg)=0.5051 | h1=0.499 h5=0.533 h21=0.503 h252=0.485
+[epoch 26] train_loss=0.0162 val_loss=1.9792 val_macroF1(avg)=0.4910 | h1=0.469 h5=0.515 h21=0.492 h252=0.488
+[epoch 27] train_loss=0.0141 val_loss=1.9631 val_macroF1(avg)=0.4994 | h1=0.499 h5=0.512 h21=0.497 h252=0.490
+[epoch 28] train_loss=0.0136 val_loss=1.9757 val_macroF1(avg)=0.4957 | h1=0.508 h5=0.494 h21=0.483 h252=0.497
+[epoch 29] train_loss=0.0130 val_loss=2.0160 val_macroF1(avg)=0.4965 | h1=0.500 h5=0.512 h21=0.484 h252=0.490
+[epoch 30] train_loss=0.0116 val_loss=2.0153 val_macroF1(avg)=0.4959 | h1=0.496 h5=0.512 h21=0.480 h252=0.496
+학습 종료. best val macro-F1=0.5396

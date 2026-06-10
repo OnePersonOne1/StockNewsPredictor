@@ -1,0 +1,4 @@
+# encoder=klue/roberta-base lr=2e-05 wd=0.01 warmup=0.1 epochs=1 batch=8 mh=64 max_len=64 seed=42 freeze=False | train=739 val=244 test=242
+[epoch 1] train_loss=1.0504 val_loss=0.9950 val_macroF1(avg)=0.2270 | h1=0.203 h5=0.207 h21=0.239 h252=0.259
+   ✓ best 갱신 (val_macroF1=0.2270, epoch 1)
+학습 종료. best val macro-F1=0.2270

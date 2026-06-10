@@ -96,11 +96,15 @@ def run() -> pd.DataFrame:
         s_te = te["score"].to_numpy()
 
         for h in HORIZONS:
-            ytr = tr[f"label_h{h}"].astype(int).to_numpy()
-            yte = te[f"label_h{h}"].astype(int).to_numpy()
+            mtr = tr[f"label_h{h}"].notna().to_numpy()   # NaN 라벨 제외
+            mte = te[f"label_h{h}"].notna().to_numpy()
+            ytr = tr[f"label_h{h}"][mtr].astype(int).to_numpy()
+            yte = te[f"label_h{h}"][mte].astype(int).to_numpy()
+            if len(yte) == 0:
+                continue
 
-            tau_lo, tau_hi = _fit_thresholds(s_tr, ytr)
-            pred = _predict(s_te, tau_lo, tau_hi)
+            tau_lo, tau_hi = _fit_thresholds(s_tr[mtr], ytr)
+            pred = _predict(s_te[mte], tau_lo, tau_hi)
 
             acc = accuracy_score(yte, pred)
             mf1 = f1_score(yte, pred, average="macro", labels=[-1, 0, 1],

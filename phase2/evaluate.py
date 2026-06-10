@@ -62,7 +62,9 @@ def evaluate_cells(out_pred, out_true):
     for idx in INDEX_NAMES:
         for h in HORIZONS:
             t = np.array(out_true[(idx, h)]); p = np.array(out_pred[(idx, h)])
-            acc = accuracy_score(t, p)
+            m = t != -100                   # NaN(ignore) 라벨 제외(예: 2025 test 의 h252)
+            t, p = t[m], p[m]
+            acc = accuracy_score(t, p) if len(t) else float("nan")
             mf1 = f1_score(t, p, average="macro", labels=CLASS_IDX, zero_division=0)
             prec = precision_score(t, p, average=None, labels=CLASS_IDX, zero_division=0)
             rec = recall_score(t, p, average=None, labels=CLASS_IDX, zero_division=0)

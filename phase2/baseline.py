@@ -56,20 +56,24 @@ def run() -> pd.DataFrame:
         Xte = vec.transform(_docs(te))
 
         for h in HORIZONS:
-            ytr = tr[f"label_h{h}"].astype(int).to_numpy()
-            yte = te[f"label_h{h}"].astype(int).to_numpy()
+            # NaN 라벨(미래가격 없음, 예: 2025 test h252) 행 제외
+            mtr = tr[f"label_h{h}"].notna().to_numpy()
+            mte = te[f"label_h{h}"].notna().to_numpy()
+            ytr = tr[f"label_h{h}"][mtr].astype(int).to_numpy()
+            yte = te[f"label_h{h}"][mte].astype(int).to_numpy()
+            if len(yte) == 0 or len(np.unique(ytr)) < 2:
+                continue
 
             clf = LogisticRegression(max_iter=2000, C=1.0,
                                      class_weight="balanced",
                                      random_state=SEED)
-            clf.fit(Xtr, ytr)
-            pred = clf.predict(Xte)
+            clf.fit(Xtr[mtr], ytr)
+            pred = clf.predict(Xte[mte])
 
             acc = accuracy_score(yte, pred)
             mf1 = f1_score(yte, pred, average="macro", labels=[-1, 0, 1],
                            zero_division=0)
-            # 다수 클래스 기저율 (train 의 최빈 클래스로 test 예측)
-            majority = tr[f"label_h{h}"].astype(int).mode().iloc[0]
+            majority = pd.Series(ytr).mode().iloc[0]
             maj_acc = accuracy_score(yte, np.full_like(yte, majority))
 
             records.append({

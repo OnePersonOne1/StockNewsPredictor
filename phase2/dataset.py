@@ -116,10 +116,12 @@ class NewsHeadlineDataset(Dataset):
 
         labels = {}
         for h in HORIZONS:
-            if BINARY:  # EXP-U: ret>0 → up(1)/down(0), 전체 데이터(flat 미제거)
-                y = int(float(row[f"ret_h{h}"]) > 0)
+            if BINARY:  # EXP-U: ret>0 → up(1)/down(0). NaN(미래가격 없음)→ -100(ignore)
+                r = float(row[f"ret_h{h}"])
+                y = -100 if r != r else int(r > 0)
             else:
-                y = LABEL2IDX[int(row[f"label_h{h}"])]
+                v = row[f"label_h{h}"]
+                y = -100 if pd.isna(v) else LABEL2IDX[int(v)]
             labels[f"h{h}"] = torch.tensor(y, dtype=torch.long)
 
         meta = {
