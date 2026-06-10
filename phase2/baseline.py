@@ -26,7 +26,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from phase1.config import (DATASET_FINAL, HORIZONS, INDEX_NAMES, SEED,  # noqa: E402
-                           RESULTS_DIR, BASELINE_TOPN)
+                           RESULTS_DIR, BASELINE_TOPN, BINARY, CLASS_IDX)
 
 EVAL_SPLIT = "test"   # 기저 성능은 test 에서 보고 (train fit)
 
@@ -56,11 +56,23 @@ def run() -> pd.DataFrame:
         Xte = vec.transform(_docs(te))
 
         for h in HORIZONS:
-            # NaN 라벨(미래가격 없음, 예: 2025 test h252) 행 제외
-            mtr = tr[f"label_h{h}"].notna().to_numpy()
-            mte = te[f"label_h{h}"].notna().to_numpy()
-            ytr = tr[f"label_h{h}"][mtr].astype(int).to_numpy()
-            yte = te[f"label_h{h}"][mte].astype(int).to_numpy()
+            # NaN 라벨(미래가격 없음, 예: 2025 test h252) 행 제외.
+            # EXP-U(BINARY): model 과 동일하게 ret_h>0 → up(1)/down(0) 로 이진화.
+            #   (3-class label_h 가 아니라 ret_h 부호 사용 → flat 미제거, model 일치)
+            if BINARY:
+                rtr = tr[f"ret_h{h}"].to_numpy(dtype=float)
+                rte = te[f"ret_h{h}"].to_numpy(dtype=float)
+                mtr = ~np.isnan(rtr)
+                mte = ~np.isnan(rte)
+                ytr = (rtr[mtr] > 0).astype(int)
+                yte = (rte[mte] > 0).astype(int)
+                eval_labels = CLASS_IDX            # [0,1]
+            else:
+                mtr = tr[f"label_h{h}"].notna().to_numpy()
+                mte = te[f"label_h{h}"].notna().to_numpy()
+                ytr = tr[f"label_h{h}"][mtr].astype(int).to_numpy()
+                yte = te[f"label_h{h}"][mte].astype(int).to_numpy()
+                eval_labels = [-1, 0, 1]
             if len(yte) == 0 or len(np.unique(ytr)) < 2:
                 continue
 
@@ -71,7 +83,7 @@ def run() -> pd.DataFrame:
             pred = clf.predict(Xte[mte])
 
             acc = accuracy_score(yte, pred)
-            mf1 = f1_score(yte, pred, average="macro", labels=[-1, 0, 1],
+            mf1 = f1_score(yte, pred, average="macro", labels=eval_labels,
                            zero_division=0)
             majority = pd.Series(ytr).mode().iloc[0]
             maj_acc = accuracy_score(yte, np.full_like(yte, majority))

@@ -27,7 +27,7 @@ if str(_ROOT) not in sys.path:
     sys.path.insert(0, str(_ROOT))
 
 from phase1.config import (DATASET_FINAL, HORIZONS, INDEX_NAMES,  # noqa: E402
-                           RESULTS_DIR, BASELINE_TOPN)
+                           RESULTS_DIR, BASELINE_TOPN, BINARY, CLASS_IDX)
 
 EVAL_SPLIT = "test"
 
@@ -96,18 +96,36 @@ def run() -> pd.DataFrame:
         s_te = te["score"].to_numpy()
 
         for h in HORIZONS:
-            mtr = tr[f"label_h{h}"].notna().to_numpy()   # NaN 라벨 제외
-            mte = te[f"label_h{h}"].notna().to_numpy()
-            ytr = tr[f"label_h{h}"][mtr].astype(int).to_numpy()
-            yte = te[f"label_h{h}"][mte].astype(int).to_numpy()
-            if len(yte) == 0:
-                continue
-
-            tau_lo, tau_hi = _fit_thresholds(s_tr[mtr], ytr)
-            pred = _predict(s_te[mte], tau_lo, tau_hi)
+            # EXP-U(BINARY): model 과 동일하게 ret_h>0 → up(1)/down(0). 단일 경계 τ
+            #   (3-class 분위수 경계 대신 train up율에 맞춘 1개 threshold)
+            if BINARY:
+                rtr = tr[f"ret_h{h}"].to_numpy(dtype=float)
+                rte = te[f"ret_h{h}"].to_numpy(dtype=float)
+                mtr = ~np.isnan(rtr)
+                mte = ~np.isnan(rte)
+                ytr = (rtr[mtr] > 0).astype(int)
+                yte = (rte[mte] > 0).astype(int)
+                if len(yte) == 0:
+                    continue
+                p_down = float(np.mean(ytr == 0))
+                tau = float(np.quantile(s_tr[mtr], p_down)) if p_down > 0 \
+                    else float(s_tr[mtr].min() - 1)
+                pred = (s_te[mte] > tau).astype(int)   # score>τ → up(1)
+                tau_lo = tau_hi = tau                  # CSV schema 유지(로깅용)
+                eval_labels = CLASS_IDX
+            else:
+                mtr = tr[f"label_h{h}"].notna().to_numpy()   # NaN 라벨 제외
+                mte = te[f"label_h{h}"].notna().to_numpy()
+                ytr = tr[f"label_h{h}"][mtr].astype(int).to_numpy()
+                yte = te[f"label_h{h}"][mte].astype(int).to_numpy()
+                if len(yte) == 0:
+                    continue
+                tau_lo, tau_hi = _fit_thresholds(s_tr[mtr], ytr)
+                pred = _predict(s_te[mte], tau_lo, tau_hi)
+                eval_labels = [-1, 0, 1]
 
             acc = accuracy_score(yte, pred)
-            mf1 = f1_score(yte, pred, average="macro", labels=[-1, 0, 1],
+            mf1 = f1_score(yte, pred, average="macro", labels=eval_labels,
                            zero_division=0)
             records.append({
                 "index": index_name, "horizon": h, "n_test": len(yte),
