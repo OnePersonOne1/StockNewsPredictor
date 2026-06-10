@@ -29,7 +29,7 @@ if str(_ROOT) not in sys.path:
 
 from phase1.config import (  # noqa: E402
     DATASET_FINAL, HORIZONS, MAX_HEADLINES, MAX_LENGTH,
-    LABEL2IDX, INDEX_NAMES, HEADLINE_SAMPLE,
+    LABEL2IDX, INDEX_NAMES, HEADLINE_SAMPLE, BINARY,
 )
 from phase1.build_labels import compute_sigma, apply_labels, assign_split  # noqa: E402
 
@@ -116,8 +116,11 @@ class NewsHeadlineDataset(Dataset):
 
         labels = {}
         for h in HORIZONS:
-            v = row[f"label_h{h}"]
-            labels[f"h{h}"] = torch.tensor(LABEL2IDX[int(v)], dtype=torch.long)
+            if BINARY:  # EXP-U: ret>0 → up(1)/down(0), 전체 데이터(flat 미제거)
+                y = int(float(row[f"ret_h{h}"]) > 0)
+            else:
+                y = LABEL2IDX[int(row[f"label_h{h}"])]
+            labels[f"h{h}"] = torch.tensor(y, dtype=torch.long)
 
         meta = {
             "date": str(pd.Timestamp(row["date"]).date()),

@@ -29,11 +29,12 @@ if str(_ROOT) not in sys.path:
 from phase1.config import (  # noqa: E402
     DATASET_FINAL, ENCODER_NAME, HORIZONS, INDEX_NAMES, MAX_LENGTH,
     BEST_CKPT, RESULTS_DIR, FIGURES_DIR, METRICS_JSON, CLASS_NAMES, IDX2LABEL,
+    CLASS_IDX,
 )
 from phase2.dataset import make_splits  # noqa: E402
 from phase2.model import HeadlineAttentionModel  # noqa: E402
 
-CLASS_IDX = [0, 1, 2]  # {-1,0,+1} 의 정수 인코딩
+# CLASS_IDX 는 config 에서(이진=[0,1], 3-class=[0,1,2])
 
 
 @torch.no_grad()

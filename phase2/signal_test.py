@@ -70,7 +70,7 @@ def roberta_scores(ckpt_path=BEST_CKPT):
             for b in range(B):
                 r = df.iloc[pos + b]
                 rows.append({"index": r["index_name"], "horizon": h,
-                             "score": float(p[b, 2] - p[b, 0]),
+                             "score": float(p[b, -1] - p[b, 0]),  # up−down (2/3-class 공통)
                              "ret": float(r[f"ret_h{h}"]),
                              "true": int(r[f"label_h{h}"])})
         pos += B

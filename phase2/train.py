@@ -76,7 +76,8 @@ def evaluate(model, loader, criterion, device):
     for h in HORIZONS:
         p = np.concatenate(preds[h]); t = np.concatenate(trues[h])
         acc = accuracy_score(t, p)
-        mf1 = f1_score(t, p, average="macro", labels=[0, 1, 2], zero_division=0)
+        from phase1.config import CLASS_IDX
+        mf1 = f1_score(t, p, average="macro", labels=CLASS_IDX, zero_division=0)
         per_h[h] = {"acc": acc, "macro_f1": mf1}
         f1s.append(mf1)
     return tot_loss / max(n_batch, 1), per_h, float(np.mean(f1s))
@@ -116,6 +117,19 @@ def train(args):
 
     best_f1 = -1.0
     CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
+    # 학습 로그 파일(설정별 고유 이름; 모든 per-epoch 기록 보존)
+    from phase1.config import RESULTS_DIR
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    logf = RESULTS_DIR / (f"trainlog_mh{args.max_headlines}_bs{args.batch_size}"
+                          f"_ep{args.epochs}_seed{args.seed}.txt")
+    log_lines = [f"# encoder={ENCODER_NAME} lr={LEARNING_RATE} wd={WEIGHT_DECAY} "
+                 f"warmup={WARMUP_RATIO} epochs={args.epochs} batch={args.batch_size} "
+                 f"mh={args.max_headlines} max_len={MAX_LENGTH} seed={args.seed} "
+                 f"freeze={FREEZE_ENCODER} | train={len(train_ds)} val={len(val_ds)} test={len(test_ds)}"]
+
+    def _log(s):
+        print(s); log_lines.append(s)
+
     for epoch in range(1, args.epochs + 1):
         model.train()
         running, n = 0.0, 0
@@ -131,11 +145,9 @@ def train(args):
         train_loss = running / max(n, 1)
 
         val_loss, per_h, val_f1 = evaluate(model, val_loader, criterion, device)
-        print(f"\n[epoch {epoch}] train_loss={train_loss:.4f} "
-              f"val_loss={val_loss:.4f} val_macroF1(avg)={val_f1:.4f}")
-        for h in HORIZONS:
-            print(f"   h={h:>3}: val_acc={per_h[h]['acc']:.3f} "
-                  f"val_macroF1={per_h[h]['macro_f1']:.3f}")
+        _log(f"[epoch {epoch}] train_loss={train_loss:.4f} "
+             f"val_loss={val_loss:.4f} val_macroF1(avg)={val_f1:.4f} | " +
+             " ".join(f"h{h}={per_h[h]['macro_f1']:.3f}" for h in HORIZONS))
 
         if val_f1 > best_f1:
             best_f1 = val_f1
@@ -145,9 +157,11 @@ def train(args):
                                    "max_headlines": args.max_headlines,
                                    "max_length": MAX_LENGTH}},
                        BEST_CKPT)
-            print(f"   ✓ best 갱신 (val_macroF1={best_f1:.4f}) → {BEST_CKPT}")
+            _log(f"   ✓ best 갱신 (val_macroF1={best_f1:.4f}, epoch {epoch})")
 
-    print(f"\n학습 종료. best val macro-F1={best_f1:.4f}")
+    _log(f"학습 종료. best val macro-F1={best_f1:.4f}")
+    logf.write_text("\n".join(log_lines), encoding="utf-8")
+    print("로그 저장:", logf)
 
 
 def build_argparser():

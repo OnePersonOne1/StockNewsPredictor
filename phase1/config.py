@@ -113,6 +113,9 @@ BASELINE_TOPN = int(os.environ.get("BASELINE_TOPN", "0"))
 # EXP-S: 버킷 내 헤드라인 정렬 기준. date=일자만(기본, 같은 날짜는 export 순서) /
 #        time=뉴스 식별자의 실제 시각(HHMMSS)으로 정렬 → 진짜 '최신 시각' top-N
 HEADLINE_ORDER = os.environ.get("HEADLINE_ORDER", "date")
+# EXP-U: 이진 분류(up/down). 기본 3-class{-1,0,+1}. BINARY=1 이면 2-class:
+#        라벨 = ret_h>0 → up(1)/down(0) (전체 데이터, flat 미제거). random macro-F1=0.5
+BINARY = os.environ.get("BINARY", "0") == "1"
 
 # 프로필·필터·변형 조합별 접미사 (y2024+all+title → 빈 문자열 → 기존 산출물 보존)
 _TAGS = ([] if EXP_PROFILE == "y2024" else [EXP_PROFILE]) \
@@ -122,7 +125,8 @@ _TAGS = ([] if EXP_PROFILE == "y2024" else [EXP_PROFILE]) \
         + (["body"] if USE_BODY else []) \
         + ([] if HEADLINE_SAMPLE == "recent" else [HEADLINE_SAMPLE]) \
         + ([f"top{BASELINE_TOPN}"] if BASELINE_TOPN else []) \
-        + ([] if HEADLINE_ORDER == "date" else [f"ord{HEADLINE_ORDER}"])
+        + ([] if HEADLINE_ORDER == "date" else [f"ord{HEADLINE_ORDER}"]) \
+        + (["bin"] if BINARY else [])
 _SUF = ("_" + "_".join(_TAGS)) if _TAGS else ""
 
 _DS_BASE = _P["dataset_file"][:-len(".parquet")]
@@ -158,7 +162,7 @@ MAX_HEADLINES = 30      # 일별 헤드라인 중 시간순 최신 N개. 사유:
                         # (원본 ~430건 전부는 24GB 초과). + EXP-P 결과 mh↑(100/200)는
                         # 평균 pooling 희석으로 오히려 성능↓ → top-30 이 근사 최적.
 MAX_LENGTH = 128 if USE_BODY else 64   # 제목 64 / 제목+본문(~200자 스니펫) 128 토큰
-N_CLASSES = 3           # {-1, 0, +1}
+N_CLASSES = 2 if BINARY else 3   # 이진=up/down, 3-class={-1,0,+1}
 
 # --- 학습 ---
 LEARNING_RATE = 2e-5
@@ -180,4 +184,5 @@ TOP_ATTN_CSV = RESULTS_DIR / "top_attention_headlines.csv"
 # 라벨 정수 인코딩: {-1,0,+1} <-> {0,1,2} (CrossEntropy 용)
 LABEL2IDX = {-1: 0, 0: 1, 1: 2}
 IDX2LABEL = {0: -1, 1: 0, 2: 1}
-CLASS_NAMES = ("down(-1)", "flat(0)", "up(+1)")
+CLASS_IDX = list(range(N_CLASSES))   # 평가용 클래스 인덱스 (이진=[0,1])
+CLASS_NAMES = ("down", "up") if BINARY else ("down(-1)", "flat(0)", "up(+1)")
