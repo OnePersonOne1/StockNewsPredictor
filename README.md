@@ -58,7 +58,7 @@
 
 ## 2. 실험 스위치 — 같은 코드로 여러 조건
 
-모든 빌드/학습/평가는 **환경변수**로 조건을 바꾼다. 기본값은 원래의 2024 지수 3-class
+모든 빌드/학습/평가는 환경변수로 조건을 바꾼다. 기본값은 원래의 2024 지수 3-class
 실험이며, 산출물은 조건별 폴더(`_SUF` 접미)로 자동 분리되어 서로 덮어쓰지 않는다.
 
 **`EXP_PROFILE`** (대상·기간·split·데이터 규모):
@@ -160,7 +160,7 @@
 | `attention_summary.{csv,md}`, `figures/attention_summary.png` | 케이스별 attention 집중도 | `compare_attention.py` |
 | `EXPERIMENT_LOG.md` | 누적 실험 로그(정식 보고서는 `docs/`) | — |
 
-## 5. 확정된 설계 (전 실험 불변)
+## 5. 전 실험 공통 사항
 
 - **3-class ternary**(기본), 임계 ε_h = 0.3·σ_h. **σ_h 는 train 에서만** 계산(누설 방지).
   방향 신호 검정 시 **이진 up/down**(`BINARY=1`)으로 전환, IC(Spearman)로 평가.
