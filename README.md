@@ -2,6 +2,18 @@
 
 > **연구 질문:** 뉴스 헤드라인의 주가 방향 예측력은 얼마나 먼 미래(horizon)까지 유효한가?
 
+<p align="center">
+  <img src="presentations/macro-F1.png" width="48%" alt="방법론별 horizon 예측력 (macro-F1)"/>
+  &nbsp;
+  <img src="presentations/IC.png" width="48%" alt="EXP-H — macro-F1 이 가린 약신호를 IC 로 검출"/>
+</p>
+<p align="center"><sub><b>좌</b> 3-class macro-F1 로는 모든 방법이 무작위(0.333) 부근 — 우열이 안 보인다 · <b>우</b> 이진 방향 <b>IC</b> 로 보면 <b>RoBERTa 만 일관된 양(+)신호</b>(KOSPI h5 IC≈0.15, 6-시드 24/24 양수)</sub></p>
+
+<p align="center">
+  <img src="presentations/attention_map.png" width="82%" alt="attention map — 헤드라인별 가중치"/>
+</p>
+<p align="center"><sub>attention — 대표본에서 특정 헤드라인에 가중치가 집중(소표본에선 균일하게 붕괴)</sub></p>
+
 한국 경제·국제 뉴스 헤드라인(BIGKinds, 한국경제·조선일보·한겨레)으로 KOSPI·KOSDAQ
 지수의 방향을 horizon h ∈ {1, 5, 21, 252} 거래일에 대해 예측한다. 기본은 3-class
 {-1,0,+1}, 이진(up/down) 모드도 지원. 학부 **컴퓨팅사고와 데이터분석** 과목 기말고사 대체
@@ -197,27 +209,8 @@ python phase2/attention_analysis.py
 
 ## 7. 핵심 결과 (요약 — 자세히는 [`docs/`](docs/README.md))
 
-### 핵심 그림 ([`presentations/`](presentations/))
-
-**① 평가 지표가 결론을 가른다.** 3-class macro-F1 로는 모든 방법(random/wordcount/TF-IDF/RoBERTa)이
-무작위(점선 0.333) 부근에서 엎치락뒤치락 — horizon·모델 우열이 거의 보이지 않는다.
-
-![방법론별 horizon 예측력 (macro-F1)](presentations/macro-F1.png)
-
-**② 그러나 이진 방향 IC 로 보면 약신호가 드러난다.** 연속 신호의 순위상관(IC)으로 보면 갈린다:
-TF-IDF≈0, wordcount 음(−), **RoBERTa 만 일관된 양(+)신호**(KOSPI h5 IC≈0.15) — 6-시드/스킵에서 24/24 양수로 안정.
-
-![EXP-H 신호 검정 — macro-F1 이 가린 약신호를 IC 로 검출](presentations/IC.png)
-
-**③ attention 으로 어떤 헤드라인이 기여했는지 해석.** 대표본에서 특정 헤드라인에 가중치가 집중된다
-(소표본에선 균일하게 붕괴 — EXP-A vs D).
-
-![attention map — 헤드라인별 가중치 (test 사례)](presentations/attention_map.png)
-
-> 위 그림은 다년(multiyear, test=2024 전체) 조건의 대표 산출이다. 케이스별 원본은
-> 각 `results*/figures/` 와 `docs/` 보고서에 있다.
-
-### 상세
+> 핵심 그림은 [최상단](#stocknewspredictor--뉴스-헤드라인의-horizon별-주가-예측력) 참고
+> (multiyear, test=2024 전체 조건의 대표 산출; 케이스별 원본은 각 `results*/figures/`).
 
 - **평가 지표가 결론을 가른다**(EXP-H, R): 3-class **macro-F1** 로는 RoBERTa·TF-IDF 모두
   무작위(0.333) 부근(0.27~0.37)이라 "신호 없음"처럼 보이나, **이진 방향 IC** 로 보면
