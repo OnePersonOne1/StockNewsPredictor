@@ -5,7 +5,7 @@
 한국 경제·국제 뉴스 헤드라인(BIGKinds, 한국경제·조선일보·한겨레)으로 KOSPI·KOSDAQ
 지수의 방향을 horizon h ∈ {1, 5, 21, 252} 거래일에 대해 예측한다. 기본은 3-class
 {-1,0,+1}, 이진(up/down) 모드도 지원. 학부 **컴퓨팅사고와 데이터분석** 과목 기말고사 대체
-과제 프로젝트 — **성능보다 과정·해석·정직한 보고가 핵심.**
+과제 프로젝트
 
 - 헤드라인: **2021~2024 본체**(`data/NewsResult_*.xlsx`) + **IT 섹션**(`data/IT_section/`) +
   **삼성전자 단독 2021~2025**(`data/Samsung_Electronics/`). 모두 BIGKinds export(Git LFS).
