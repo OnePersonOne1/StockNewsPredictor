@@ -197,6 +197,28 @@ python phase2/attention_analysis.py
 
 ## 7. 핵심 결과 (요약 — 자세히는 [`docs/`](docs/README.md))
 
+### 핵심 그림 ([`presentations/`](presentations/))
+
+**① 평가 지표가 결론을 가른다.** 3-class macro-F1 로는 모든 방법(random/wordcount/TF-IDF/RoBERTa)이
+무작위(점선 0.333) 부근에서 엎치락뒤치락 — horizon·모델 우열이 거의 보이지 않는다.
+
+![방법론별 horizon 예측력 (macro-F1)](presentations/macro-F1.png)
+
+**② 그러나 이진 방향 IC 로 보면 약신호가 드러난다.** 연속 신호의 순위상관(IC)으로 보면 갈린다:
+TF-IDF≈0, wordcount 음(−), **RoBERTa 만 일관된 양(+)신호**(KOSPI h5 IC≈0.15) — 6-시드/스킵에서 24/24 양수로 안정.
+
+![EXP-H 신호 검정 — macro-F1 이 가린 약신호를 IC 로 검출](presentations/IC.png)
+
+**③ attention 으로 어떤 헤드라인이 기여했는지 해석.** 대표본에서 특정 헤드라인에 가중치가 집중된다
+(소표본에선 균일하게 붕괴 — EXP-A vs D).
+
+![attention map — 헤드라인별 가중치 (test 사례)](presentations/attention_map.png)
+
+> 위 그림은 다년(multiyear, test=2024 전체) 조건의 대표 산출이다. 케이스별 원본은
+> 각 `results*/figures/` 와 `docs/` 보고서에 있다.
+
+### 상세
+
 - **평가 지표가 결론을 가른다**(EXP-H, R): 3-class **macro-F1** 로는 RoBERTa·TF-IDF 모두
   무작위(0.333) 부근(0.27~0.37)이라 "신호 없음"처럼 보이나, **이진 방향 IC** 로 보면
   **RoBERTa 가 약한 양(+)신호**(KOSPI h5 IC≈0.15, 다중시드 안정), TF-IDF 는 IC≈0, wordcount 는
