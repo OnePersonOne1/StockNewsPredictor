@@ -19,16 +19,16 @@
 {-1,0,+1}, 이진(up/down) 모드도 지원. 학부 **컴퓨팅사고와 데이터분석** 과목 기말고사 대체
 과제 프로젝트
 
-- 헤드라인: **2021~2024 본체**(`data/NewsResult_*.xlsx`) + **IT 섹션**(`data/IT_section/`) +
-  **삼성전자 단독 2021~2025**(`data/Samsung_Electronics/`). 모두 BIGKinds export(Git LFS).
-- 가격: 지수·개별종목 종가(2021~2026, **FinanceDataReader** — 자격증명 불필요).
-- **실험별 정식 보고서는 [`docs/`](docs/README.md) 에 있다(EXP-A ~ EXP-X, 고찰 `discussion.md`).**
+- 헤드라인: **2021–2024 본체**(`data/NewsResult_*.xlsx`) + **IT 섹션**(`data/IT_section/`) +
+  **삼성전자 단독 2021–2025**(`data/Samsung_Electronics/`). 모두 BIGKinds export(Git LFS).
+- 가격: 지수·개별종목 종가(2021–2026, **FinanceDataReader** — 자격증명 불필요).
+- **실험별 정식 보고서는 [`docs/`](docs/README.md) 에 있다(EXP-A–EXP-X, 고찰 `discussion.md`).**
 
 ### 핵심 결론 한눈에
 1. **헤드라인의 방향 예측력은 약하지만 "없지는 않다".** 3-class macro-F1 로는 모두 무작위
    부근이나, 이는 평가 지표가 신호를 가린 탓 — **IC(이진 방향) 로 보면 RoBERTa 가 약한 양(+)
    신호**(KOSPI h5 IC ≈0.15, 다중시드 안정). 단 거래 가능 수준은 아님(EXP-H).
-2. **저자원에서 딥러닝 붕괴는 데이터 크기 문제**(EXP-A~F, M): 406행 붕괴 → 3년(1358) 해소.
+2. **저자원에서 딥러닝 붕괴는 데이터 크기 문제**(EXP-A–F, M): 406행 붕괴 → 3년(1358) 해소.
 3. **입력은 적고·최신·관련 있는 게 최적**: 정제 필터가 TF-IDF↑(EXP-C·E·G), 헤드라인을 더 넣거나
    (EXP-P) 랜덤 셔플(EXP-Q)하면 RoBERTa↓, **실제 시각 정렬이 최선**(EXP-S).
 4. **4 epoch 은 대표본에 부족**(EXP-T) — 다년/단일종목은 더 길게.
@@ -42,9 +42,9 @@
 
 ```
 .
-├── data/NewsResult_*.xlsx     # BIGKinds 본체 헤드라인 (2021~2024; Git LFS)
+├── data/NewsResult_*.xlsx     # BIGKinds 본체 헤드라인 (2021–2024; Git LFS)
 │   ├── IT_section/            # IT·과학 섹션 추가 export (INCLUDE_IT/IT_ONLY 용)
-│   └── Samsung_Electronics/   # 삼성전자 단독 검색식 export 2021~2025 (samsung 프로필)
+│   └── Samsung_Electronics/   # 삼성전자 단독 검색식 export 2021–2025 (samsung 프로필)
 ├── kospi_2024.csv, kosdaq_2024.csv   # KRX 2024 종가(원본 시드)
 ├── KRX_download.py            # (참고) KRX 종가 수집 — 현재는 FDR 로 대체
 ├── docs/                      # ★ 실험 보고서 (README=인덱스, experiments/EXP-*.md, discussion.md,
@@ -77,27 +77,27 @@
 
 | 프로필 | 대상 | train / val / test | 규모 | 용도 |
 |---|---|---|---|---|
-| `y2024` (기본) | 지수 | 2024-01~10 / 11 / 12 | 소(406) | 주 실험(EXP-A) |
-| `y2021`/`y2022`/`y2023` | 지수 | Y-01~10 / Y-11 / Y-12 | 소(~400) | 데이터크기 통제(EXP-F) |
+| `y2024` (기본) | 지수 | 2024-01–10 / 11 / 12 | 소(406) | 주 실험(EXP-A) |
+| `y2021`/`y2022`/`y2023` | 지수 | Y-01–10 / Y-11 / Y-12 | 소(약400) | 데이터크기 통제(EXP-F) |
 | `multiyear` | 지수 | 2021-01–2023-09 / 2023-10–12 / **2024 전체** | 대(1358) | 데이터 확대(EXP-D) |
-| `samsung` | 삼성전자(005930) | 2021~2023 / 2024 / **2025** | 중 | 단일종목(EXP-V/W) |
-| `samsung_cv` | 삼성전자 | 2021~2022 / 2023 / **2024+2025** | 중 | 2024 완전 held-out(EXP-X) |
+| `samsung` | 삼성전자(005930) | 2021–2023 / 2024 / **2025** | 중 | 단일종목(EXP-V/W) |
+| `samsung_cv` | 삼성전자 | 2021–2022 / 2023 / **2024+2025** | 중 | 2024 완전 held-out(EXP-X) |
 
 **`HEADLINE_FILTER`** (BIGKinds 통합분류1 카테고리로 잡음 제거):
 
 | 필터 | 포함 카테고리 | 일평균(2024) |
 |---|---|---|
-| `all` (기본) | 전체 | ~287 |
-| `market` | 경제>증권_증시 | ~28 |
-| `macro` | 증권+금융_재테크+국제경제+외환+경제일반 | ~66 |
-| `it` | IT_과학 + 경제>반도체 | ~27 |
-| `market_it` | 증권 + IT_과학 + 반도체 | ~55 |
+| `all` (기본) | 전체 | 약287 |
+| `market` | 경제>증권_증시 | 약28 |
+| `macro` | 증권+금융_재테크+국제경제+외환+경제일반 | 약66 |
+| `it` | IT_과학 + 경제>반도체 | 약27 |
+| `market_it` | 증권 + IT_과학 + 반도체 | 약55 |
 
 **그 외 토글**(모두 산출물 경로에 반영, 기본=왼쪽):
 
 | 스위치 | 값 | 효과 / 관련 실험 |
 |---|---|---|
-| `BINARY` | `0`/`1` | 3-class → 이진 up/down(N_CLASSES=2). IC·방향검정용(EXP-H, M, V~X) |
+| `BINARY` | `0`/`1` | 3-class → 이진 up/down(N_CLASSES=2). IC·방향검정용(EXP-H, M, V–X) |
 | `HEADLINE_ORDER` | `date`/`time` | 일자정렬 → 뉴스식별자 HHMMSS 실시각 정렬. time 이 최선(EXP-S) |
 | `HEADLINE_SAMPLE` | `recent`/`random` | top-N 선택을 최신순 vs 랜덤. recent 우세(EXP-Q) |
 | `MAX_HEADLINES` | 정수(기본 30) | 하루에 읽는 헤드라인 수. 많을수록 RoBERTa↓(EXP-P), 삼성=64(전량) |
@@ -213,10 +213,10 @@ python phase2/attention_analysis.py
 > (multiyear, test=2024 전체 조건의 대표 산출; 케이스별 원본은 각 `results*/figures/`).
 
 - **평가 지표가 결론을 가른다**(EXP-H, R): 3-class **macro-F1** 로는 RoBERTa·TF-IDF 모두
-  무작위(0.333) 부근(0.27~0.37)이라 "신호 없음"처럼 보이나, **이진 방향 IC** 로 보면
+  무작위(0.333) 부근(0.27–0.37)이라 "신호 없음"처럼 보이나, **이진 방향 IC** 로 보면
   **RoBERTa 가 약한 양(+)신호**(KOSPI h5 IC≈0.15, 다중시드 안정), TF-IDF 는 IC≈0, wordcount 는
   음(-)신호. 단 롱숏 백테스트는 유의하지 않음 → **탐지는 되나 거래 가능한 알파는 아님**(약형 효율).
-- **저자원 딥러닝 붕괴는 데이터 규모의 산물**(EXP-A~F, M): 406행에선 예측·attention 모두 붕괴,
+- **저자원 딥러닝 붕괴는 데이터 규모의 산물**(EXP-A–F, M): 406행에선 예측·attention 모두 붕괴,
   3년(1358)에서 해소(attention lift 1.07×→7.85×). 정상기 소표본(EXP-F)도 붕괴 → 데이터 크기 문제.
 - **입력은 적고·최신·실시각순이 최적**: 정제 필터가 TF-IDF↑(EXP-C·E), IT 섹터에 신호 농축
   (EXP-G, 단 신호는 'IT 주제'가 아닌 '경제적 프레이밍'에 있음 — EXP-N). 헤드라인을 더 넣으면
