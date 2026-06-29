@@ -2,6 +2,9 @@
 
 > **연구 질문:** 뉴스 헤드라인의 주가 방향 예측력은 얼마나 먼 미래(horizon)까지 유효한가?
 
+### 컴퓨팅사고와 데이터분석 기초
+만점(50/50), 1/266등(동점자: 3)
+
 <p align="center">
   <img src="presentations/macro-F1.png" width="48%" alt="방법론별 horizon 예측력 (macro-F1)"/>
   &nbsp;
